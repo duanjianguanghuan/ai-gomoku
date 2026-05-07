@@ -1,0 +1,194 @@
+/**
+ * 精致模式 - 增强样式 v6
+ * 轻量化 · 无 will-change · 具体 transition · 最多 2 层阴影
+ * 岛相关样式已迁移至 island-animation.css（支持子风格）
+ */
+
+/* ========== 精致模式灵动岛 CSS 变量 ========== */
+[data-perf="on"] {
+    --island-accent-luxury: #d4af37;
+    --island-accent-minimal: #888;
+    --island-accent-glass: #8b5cf6;
+}
+
+/* ========== 精致模式 - 状态栏呼吸光效 ========== */
+[data-perf="on"] #status-bar::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, var(--accent-shadow), transparent 40%, transparent 60%, var(--accent-shadow));
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-smooth);
+    pointer-events: none;
+    z-index: -1;
+}
+
+[data-perf="on"] #status-bar:hover::after {
+    opacity: 0.3;
+}
+
+/* ========== 精致模式 - 按钮涟漪增强 ========== */
+[data-perf="on"] .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 50%);
+    opacity: 0;
+    transition: opacity var(--duration-fast) ease;
+    pointer-events: none;
+}
+
+[data-perf="on"] .btn-primary:hover::before {
+    opacity: 1;
+}
+
+/* ========== 精致模式 - 分数区域微交互 ========== */
+[data-perf="on"] .score-item {
+    padding: 2px 6px;
+    border-radius: 8px;
+    transition: transform var(--duration-normal) var(--ease-spring), background var(--duration-fast) ease;
+}
+
+[data-perf="on"] .score-item:hover {
+    transform: translateY(-1px);
+    background: var(--opt-btn-bg);
+}
+
+/* ========== 精致模式 - 设置项入场动画 ========== */
+[data-perf="on"] #settings-content .setting-item {
+    animation: settingItemIn var(--duration-normal) var(--ease-out-expo) both;
+}
+
+[data-perf="on"] #settings-content .setting-item:nth-child(1) { animation-delay: 0.05s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(2) { animation-delay: 0.1s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(3) { animation-delay: 0.15s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(4) { animation-delay: 0.2s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(5) { animation-delay: 0.25s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(6) { animation-delay: 0.3s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(7) { animation-delay: 0.35s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(8) { animation-delay: 0.4s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(9) { animation-delay: 0.45s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(10) { animation-delay: 0.5s; }
+
+@keyframes settingItemIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ========== 精致模式 - 胜利遮罩微光效果 ========== */
+[data-perf="on"] #win-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.05), transparent 60%);
+    pointer-events: none;
+    animation: winShimmer 3s ease-in-out infinite;
+}
+
+@keyframes winShimmer {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* ========== 精致模式 - 控制按钮区域入场 ========== */
+[data-perf="on"] #controls {
+    animation: controlsSlideUp var(--duration-slow) var(--ease-out-expo);
+}
+
+@keyframes controlsSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== 精致模式 - 思考提示脉冲边框 ========== */
+[data-perf="on"] #thinking::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 1.5px solid var(--accent);
+    opacity: 0;
+    animation: thinkingPulse 1.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes thinkingPulse {
+    0%, 100% { opacity: 0; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.02); }
+}
+
+/* ========== 精致模式棋盘呼吸效果（性能优化） ========== */
+[data-perf="on"] #board-container {
+    animation: refinedBoardBreath 6s ease-in-out infinite;
+}
+@keyframes refinedBoardBreath {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.003); opacity: 0.97; }
+}
+
+/* ========== 精致模式画布光标 ========== */
+[data-perf="on"] #board-canvas {
+    cursor: crosshair;
+}
+[data-perf="on"] #board-canvas.disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* ========== 精致模式分数弹跳动画 ========== */
+[data-perf="on"] .score-num.pop {
+    animation: refinedScorePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes refinedScorePop {
+    0% { transform: scale(1) translateY(0); }
+    30% { transform: scale(1.5) translateY(-3px); }
+    100% { transform: scale(1) translateY(0); }
+}
+
+/* ========== 精致模式思考指示器增强 ========== */
+[data-perf="on"] #thinking .thinking-dots span {
+    width: 6px; height: 6px;
+    box-shadow: 0 0 6px var(--accent-shadow);
+}
+
+/* ========== 精致模式胜利遮罩入场动画 ========== */
+[data-perf="on"] #win-overlay:not(.hidden) {
+    animation: refinedWinIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes refinedWinIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ========== 精致模式按钮悬停增强 ========== */
+[data-perf="on"] .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--accent-shadow);
+}
+[data-perf="on"] .btn-primary:active {
+    transform: translateY(0) scale(0.97);
+}
+
+/* ========== 精致模式设置面板滚动条 ========== */
+[data-perf="on"] .settings-inner {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(128,128,128,0.15) transparent;
+}
+[data-perf="on"] .settings-inner::-webkit-scrollbar { width: 3px; }
+[data-perf="on"] .settings-inner::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.15); border-radius: 2px; }
+
+/* ========== 精致模式按钮光泽效果 ========== */
+[data-perf="on"] .btn-primary {
+    position: relative;
+    overflow: hidden;
+}
+[data-perf="on"] .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent 60%);
+    pointer-events: none;
+}

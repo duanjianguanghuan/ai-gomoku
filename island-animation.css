@@ -1,0 +1,463 @@
+/**
+ * 灵动岛动画样式 v3
+ * 双模式架构：标准模式（始终加载）+ 精致模式覆盖（[data-perf="on"]）
+ * 纯 CSS keyframes 驱动，JS 仅负责 class 切换
+ */
+
+/* ================================================================
+   PART 1: 标准模式样式（始终加载）
+   ================================================================ */
+
+/* ---------- 基础过渡 ---------- */
+
+.island-pill {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.3s ease,
+                box-shadow 0.3s ease,
+                opacity 0.2s ease,
+                border-color 0.3s ease;
+}
+
+.island-expanded {
+    transition: background 0.3s ease,
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+}
+
+/* ---------- 展开动画 ---------- */
+
+/* 面板弹性入场 */
+.music-island.expanded .island-expanded {
+    animation: islandExpandIn 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+@keyframes islandExpandIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scaleY(0.85) scaleX(0.95);
+    }
+    40% {
+        opacity: 1;
+        transform: translateX(-50%) scaleY(1.03) scaleX(1.01);
+    }
+    70% {
+        transform: translateX(-50%) scaleY(0.98) scaleX(0.99);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scaleY(1) scaleX(1);
+    }
+}
+
+/* 药丸展开时缩小消失 */
+.music-island.expanded .island-pill {
+    animation: pillShrinkOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+@keyframes pillShrinkOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+/* ---------- 收起动画 ---------- */
+
+/* 面板弹性退场 */
+.island-expanded.collapsing {
+    animation: islandCollapseOut 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+    pointer-events: none;
+}
+
+@keyframes islandCollapseOut {
+    0% {
+        opacity: 1;
+        transform: translateX(-50%) scaleY(1) scaleX(1);
+    }
+    30% {
+        opacity: 1;
+        transform: translateX(-50%) scaleY(1.02) scaleX(1.01);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) scaleY(0.85) scaleX(0.95);
+    }
+}
+
+/* 药丸弹性恢复 */
+.island-pill.restoring {
+    animation: pillRestoreIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+@keyframes pillRestoreIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    75% {
+        transform: scale(0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ---------- 播放状态动画 ---------- */
+
+/* 播放时药丸呼吸光效 */
+.music-island.playing .island-pill::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at center, var(--accent-shadow) 0%, transparent 70%);
+    opacity: 0;
+    animation: playingGlow 2.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes playingGlow {
+    0%, 100% { opacity: 0; transform: scale(0.95); }
+    50% { opacity: 0.4; transform: scale(1.05); }
+}
+
+/* 播放时面板边框呼吸 */
+.music-island.expanded.playing .island-expanded::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    background: linear-gradient(135deg, var(--accent-shadow), transparent 40%, transparent 60%, var(--accent-shadow)) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    animation: panelBorderGlow 2.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes panelBorderGlow {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 0.5; }
+}
+
+/* ---------- 封面旋转动画 ---------- */
+
+.music-island.expanded.playing .island-cover {
+    animation: coverSpin 8s linear infinite;
+}
+
+@keyframes coverSpin {
+    from { transform: rotate(var(--cover-angle, 0deg)); }
+    to { transform: rotate(360deg); }
+}
+
+.music-island.expanded:not(.playing) .island-cover {
+    animation: none;
+    transform: rotate(var(--cover-angle, 0deg));
+}
+
+/* ---------- 加载状态 ---------- */
+
+.music-island.loading .island-pill::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    border: 1.5px solid var(--accent);
+    opacity: 0;
+    animation: loadingRing 1.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes loadingRing {
+    0% { opacity: 0; transform: scale(0.9); }
+    50% { opacity: 0.3; transform: scale(1.08); }
+    100% { opacity: 0; transform: scale(1.15); }
+}
+
+/* ---------- 音频可视化条 ---------- */
+
+.island-visualizer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+    z-index: 1;
+}
+
+.island-vis-bar {
+    width: 2.5px;
+    border-radius: 1.5px;
+    background: var(--accent);
+    min-height: 3px;
+    max-height: 14px;
+}
+
+.island-vis-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    opacity: 0.3;
+}
+
+/* ---------- 歌曲信息过渡 ---------- */
+
+.island-meta {
+    overflow: hidden;
+}
+
+.island-song-wrap {
+    overflow: hidden;
+}
+
+.island-song,
+.island-artist {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* ---------- 按钮交互 ---------- */
+
+#music-play:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 16px var(--accent-shadow);
+}
+
+#music-play:active {
+    transform: scale(0.95);
+}
+
+#music-prev:hover,
+#music-next:hover {
+    transform: scale(1.08);
+}
+
+#music-prev:active,
+#music-next:active {
+    transform: scale(0.92);
+}
+
+#music-progress:hover {
+    height: 6px;
+}
+
+#music-progress .progress-fill {
+    transition: width 0.15s linear;
+}
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 380px) {
+    .island-visualizer {
+        height: 10px;
+    }
+    .island-vis-bar {
+        width: 2px;
+        max-height: 10px;
+    }
+}
+
+
+/* ================================================================
+   PART 2: 精致模式覆盖（[data-perf="on"]）
+   动画相关的精致模式增强样式
+   ================================================================ */
+
+/* ---------- 精致模式基础增强（无模糊） ---------- */
+
+/* ---------- 精致模式播放光效调整 ---------- */
+
+[data-perf="on"].music-island.playing .island-pill::before {
+    animation-duration: 3s;
+    opacity: 0.3;
+}
+
+/* ---------- Luxury 子风格 ---------- */
+
+/* Luxury: 金色边框、深棕底、柔和光晕、更慢动画 */
+[data-perf="on"][data-style="luxury"] .island-pill {
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.25),
+                0 0 24px rgba(212, 175, 55, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(212, 175, 55, 0.4);
+}
+
+[data-perf="on"][data-style="luxury"] .island-expanded {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35),
+                0 0 0 0.5px rgba(212, 175, 55, 0.2),
+                0 0 30px rgba(212, 175, 55, 0.06),
+                inset 0 1px 0 rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+[data-perf="on"][data-style="luxury"] .music-island.expanded .island-expanded {
+    animation-duration: 500ms;
+}
+
+[data-perf="on"][data-style="luxury"] .music-island.expanded .island-pill {
+    animation-duration: 320ms;
+}
+
+[data-perf="on"][data-style="luxury"] .island-expanded.collapsing {
+    animation-duration: 480ms;
+}
+
+[data-perf="on"][data-style="luxury"] .island-pill.restoring {
+    animation-duration: 460ms;
+}
+
+[data-perf="on"][data-style="luxury"] .music-island.playing .island-pill::before {
+    animation-duration: 3.5s;
+    background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
+}
+
+[data-perf="on"][data-style="luxury"] .music-island.expanded.playing .island-expanded::before {
+    animation-duration: 3.5s;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), transparent 40%, transparent 60%, rgba(212, 175, 55, 0.2)) border-box;
+}
+
+[data-perf="on"][data-style="luxury"] .island-vis-bar {
+    width: 2.5px;
+    border-radius: 1.5px;
+    background: linear-gradient(to top, #d4af37, #f0d060);
+}
+
+[data-perf="on"][data-style="luxury"] .music-island.expanded.playing .island-cover {
+    animation-duration: 12s;
+}
+
+/* ---------- Minimal 子风格 ---------- */
+
+/* Minimal: 无模糊、极细边框、超快动画、无光效 */
+[data-perf="on"][data-style="minimal"] .island-pill {
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+[data-perf="on"][data-style="minimal"] .island-expanded {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+[data-perf="on"][data-style="minimal"] .music-island.expanded .island-expanded {
+    animation-duration: 300ms;
+}
+
+[data-perf="on"][data-style="minimal"] .music-island.expanded .island-pill {
+    animation-duration: 180ms;
+}
+
+[data-perf="on"][data-style="minimal"] .island-expanded.collapsing {
+    animation-duration: 280ms;
+}
+
+[data-perf="on"][data-style="minimal"] .island-pill.restoring {
+    animation-duration: 280ms;
+}
+
+/* Minimal: 禁用播放光效 */
+[data-perf="on"][data-style="minimal"] .music-island.playing .island-pill::before {
+    display: none;
+}
+
+[data-perf="on"][data-style="minimal"] .music-island.expanded.playing .island-expanded::before {
+    display: none;
+}
+
+[data-perf="on"][data-style="minimal"] .island-vis-bar {
+    width: 1.5px;
+    border-radius: 1px;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+[data-perf="on"][data-style="minimal"] .island-vis-bar::after {
+    display: none;
+}
+
+[data-perf="on"][data-style="minimal"] .music-island.loading .island-pill::after {
+    display: none;
+}
+
+/* ---------- Glassmorphism 子风格 ---------- */
+
+/* Glassmorphism: 强模糊、紫蓝渐变、彩色光晕、彩虹可视化 */
+[data-perf="on"][data-style="glassmorphism"] .island-pill {
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12),
+                0 0 16px rgba(139, 92, 246, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+[data-perf="on"][data-style="glassmorphism"] .island-expanded {
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2),
+                0 0 24px rgba(139, 92, 246, 0.12),
+                0 0 0 0.5px rgba(139, 92, 246, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+[data-perf="on"][data-style="glassmorphism"].music-island.expanded .island-expanded {
+    backdrop-filter: blur(28px) saturate(1.6);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+}
+
+[data-perf="on"][data-style="glassmorphism"] .music-island.expanded .island-expanded {
+    animation-duration: 480ms;
+}
+
+[data-perf="on"][data-style="glassmorphism"] .music-island.expanded .island-pill {
+    animation-duration: 300ms;
+}
+
+[data-perf="on"][data-style="glassmorphism"] .island-expanded.collapsing {
+    animation-duration: 460ms;
+}
+
+[data-perf="on"][data-style="glassmorphism"] .island-pill.restoring {
+    animation-duration: 460ms;
+}
+
+[data-perf="on"][data-style="glassmorphism"] .music-island.playing .island-pill::before {
+    background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.35) 0%, rgba(99, 102, 241, 0.15) 50%, transparent 70%);
+    animation-duration: 3.2s;
+}
+
+[data-perf="on"][data-style="glassmorphism"] .music-island.expanded.playing .island-expanded::before {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), transparent 40%, transparent 60%, rgba(168, 85, 247, 0.25)) border-box;
+    animation-duration: 3.2s;
+}
+
+[data-perf="on"][data-style="glassmorphism"] .island-vis-bar {
+    width: 2.5px;
+    border-radius: 1.5px;
+    background: linear-gradient(to top, #818cf8, #a78bfa, #c084fc, #e879f9);
+}
+
+[data-perf="on"][data-style="glassmorphism"] .island-vis-bar::after {
+    opacity: 0.2;
+}

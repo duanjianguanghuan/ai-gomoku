@@ -1,0 +1,2062 @@
+/* ========== CSS 变量 - 深色主题 ========== */
+:root,
+[data-theme="dark"] {
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-tertiary: #0f3460;
+    --bg-card: rgba(255, 255, 255, 0.06);
+    --bg-overlay: rgba(0, 0, 0, 0.75);
+    --bg-settings: rgba(0, 0, 0, 0.8);
+    --bg-settings-card: linear-gradient(145deg, #1e2a4a, #16213e);
+    --text-primary: #e8e8e8;
+    --text-secondary: #aaa;
+    --text-muted: #666;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-btn: rgba(255, 255, 255, 0.15);
+    --accent: #f5af19;
+    --accent-gradient: linear-gradient(135deg, #f5af19, #f12711);
+    --accent-shadow: rgba(241, 39, 17, 0.3);
+    --btn-secondary-bg: rgba(255, 255, 255, 0.1);
+    --btn-secondary-hover: rgba(255, 255, 255, 0.18);
+    --opt-btn-bg: rgba(255, 255, 255, 0.05);
+    --thinking-bg: rgba(0, 0, 0, 0.7);
+    --board-shadow-1: rgba(0, 0, 0, 0.4);
+    --board-shadow-2: rgba(245, 175, 25, 0.08);
+    --status-glow: rgba(245, 175, 25, 0.15);
+    --score-color-player: #4ade80;
+    --score-color-ai: #f87171;
+    --score-color-draw: #fbbf24;
+    --perf-border: rgba(255, 255, 255, 0.12);
+    --mode-badge-bg: rgba(245, 175, 25, 0.15);
+    --mode-badge-text: #f5af19;
+    --settings-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --memory-bg: rgba(255, 255, 255, 0.04);
+    --memory-border: rgba(255, 255, 255, 0.06);
+    --auto-badge-bg: rgba(74, 222, 128, 0.15);
+    --auto-badge-text: #4ade80;
+    --win-overlay-bg: rgba(0, 0, 0, 0.75);
+    /* 灵动岛主题色 - 药丸（毛玻璃开启：极透明 + 强模糊） */
+    --island-bg: rgba(18, 18, 35, 0.25);
+    --island-bg-hover: rgba(18, 18, 35, 0.35);
+    --island-bg-playing: rgba(18, 18, 35, 0.3);
+    --island-border: rgba(255, 255, 255, 0.1);
+    --island-shadow: rgba(0, 0, 0, 0.2);
+    /* 灵动岛主题色 - 展开面板（毛玻璃开启） */
+    --island-panel-bg: rgba(18, 18, 35, 0.4);
+    --island-panel-border: rgba(255, 255, 255, 0.1);
+    --island-panel-shadow: rgba(0, 0, 0, 0.4);
+    /* 灵动岛 - 无毛玻璃模式（接近不透明纯色） */
+    --island-bg-solid: rgba(22, 22, 40, 0.96);
+    --island-panel-bg-solid: rgba(22, 22, 40, 0.97);
+}
+
+/* ========== 浅色主题 ========== */
+[data-theme="light"] {
+    --bg-primary: #f0f2f5;
+    --bg-secondary: #e4e7ec;
+    --bg-tertiary: #d1d5db;
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --bg-overlay: rgba(255, 255, 255, 0.75);
+    --bg-settings: rgba(0, 0, 0, 0.3);
+    --bg-settings-card: linear-gradient(145deg, #ffffff, #f5f5f5);
+    --text-primary: #1a1a2e;
+    --text-secondary: #555;
+    --text-muted: #999;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --border-btn: rgba(0, 0, 0, 0.12);
+    --accent: #e85d04;
+    --accent-gradient: linear-gradient(135deg, #e85d04, #dc2f02);
+    --accent-shadow: rgba(220, 47, 2, 0.25);
+    --btn-secondary-bg: rgba(0, 0, 0, 0.06);
+    --btn-secondary-hover: rgba(0, 0, 0, 0.10);
+    --opt-btn-bg: rgba(0, 0, 0, 0.04);
+    --thinking-bg: rgba(255, 255, 255, 0.85);
+    --board-shadow-1: rgba(0, 0, 0, 0.15);
+    --board-shadow-2: rgba(232, 93, 4, 0.06);
+    --status-glow: rgba(232, 93, 4, 0.1);
+    --score-color-player: #16a34a;
+    --score-color-ai: #dc2626;
+    --score-color-draw: #d97706;
+    --perf-border: rgba(0, 0, 0, 0.1);
+    --mode-badge-bg: rgba(232, 93, 4, 0.12);
+    --mode-badge-text: #e85d04;
+    --settings-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --memory-bg: rgba(0, 0, 0, 0.03);
+    --memory-border: rgba(0, 0, 0, 0.06);
+    --auto-badge-bg: rgba(22, 163, 74, 0.12);
+    --auto-badge-text: #16a34a;
+    --win-overlay-bg: rgba(255, 255, 255, 0.75);
+    /* 灵动岛主题色 - 药丸（毛玻璃开启：极透明 + 强模糊） */
+    --island-bg: rgba(255, 255, 255, 0.2);
+    --island-bg-hover: rgba(255, 255, 255, 0.3);
+    --island-bg-playing: rgba(255, 255, 255, 0.25);
+    --island-border: rgba(0, 0, 0, 0.1);
+    --island-shadow: rgba(0, 0, 0, 0.08);
+    /* 灵动岛主题色 - 展开面板（毛玻璃开启） */
+    --island-panel-bg: rgba(255, 255, 255, 0.35);
+    --island-panel-border: rgba(0, 0, 0, 0.1);
+    --island-panel-shadow: rgba(0, 0, 0, 0.15);
+    /* 灵动岛 - 无毛玻璃模式（接近不透明纯色） */
+    --island-bg-solid: rgba(240, 242, 245, 0.96);
+    --island-panel-bg-solid: rgba(245, 247, 250, 0.97);
+}
+
+/* ========== 精致模式覆盖 ========== */
+[data-perf="on"] {
+    --status-radius: 18px;
+    --status-padding: 10px 18px;
+    --btn-radius: 14px;
+    --btn-padding: 12px 22px;
+    --opt-radius: 12px;
+    --opt-padding: 12px 8px;
+    --board-radius: 16px;
+    --board-glow: 0 8px 40px var(--board-shadow-1), 0 0 80px var(--board-shadow-2);
+    --header-size: 1.5rem;
+    --status-glow-enhanced: 0 4px 24px var(--status-glow);
+    --transition-speed: 0.35s;
+    --win-radius: 16px;
+    --font-weight-title: 700;
+    --font-weight-btn: 600;
+    --letter-spacing: 1.5px;
+    --score-font-size: 1.08rem;
+    --settings-card-radius: 24px;
+    --settings-card-padding: 26px 30px;
+    --settings-card-shadow: 0 16px 56px rgba(0, 0, 0, 0.4);
+    --opt-btn-active-shadow: 0 6px 20px var(--accent-shadow);
+    --btn-primary-shadow: 0 8px 24px var(--accent-shadow);
+    --win-text-size: 1.8rem;
+    --win-icon-size: 3.8rem;
+    --win-detail-size: 0.98rem;
+    --piece-indicator-size: 24px;
+    --chip-padding: 5px 14px;
+    --chip-radius: 16px;
+    --chip-font-size: 0.82rem;
+    --chip-font-weight: 500;
+    --score-dot-size: 8px;
+    --score-label-size: 0.75rem;
+    --score-label-weight: 500;
+    --score-gap: 10px;
+    --controls-gap: 14px;
+    --controls-padding: 14px 0;
+    --opt-group-gap: 12px;
+    --setting-label-size: 0.9rem;
+    --setting-label-weight: 600;
+    --settings-title-size: 1.3rem;
+    --settings-title-weight: 800;
+    --spinner-size: 20px;
+    --spinner-width: 2.5px;
+    --thinking-padding: 12px 22px;
+    --thinking-radius: 28px;
+    --thinking-weight: 600;
+    --icon-btn-size: 42px;
+    --icon-btn-border: 1.5px;
+    --icon-btn-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    --opt-btn-weight: 600;
+    --opt-btn-border-width: 1.5px;
+    --btn-letter-spacing: 1px;
+    --btn-secondary-border-width: 1.5px;
+    --memory-radius: 14px;
+    --memory-padding: 14px 18px;
+    --win-content-padding: 28px;
+    --island-accent: var(--island-accent-luxury, #d4af37);
+    /* 精致模式动画优化 */
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-soft: cubic-bezier(0.45, 0, 0.55, 1);
+    --duration-fast: 0.2s;
+    --duration-normal: 0.35s;
+    --duration-slow: 0.5s;
+    --duration-slower: 0.7s;
+}
+
+/* ========== 奢华风格 (Luxury) ========== */
+[data-perf="on"][data-style="luxury"] {
+    /* 主色调：金色系 */
+    --accent: #d4af37;
+    --accent-gradient: linear-gradient(135deg, #f0d060, #d4af37, #b8962e);
+    --accent-shadow: rgba(212, 175, 55, 0.35);
+    --status-glow: rgba(212, 175, 55, 0.2);
+    --board-shadow-2: rgba(212, 175, 55, 0.12);
+    
+    /* 背景：深棕暖调 */
+    --bg-primary: #1a1510;
+    --bg-secondary: #241c14;
+    --bg-tertiary: #2d241a;
+    --bg-card: rgba(60, 42, 20, 0.15);
+    --bg-settings-card: linear-gradient(145deg, #2a1f14, #1e160d);
+    
+    /* 文字：奶油色 */
+    --text-primary: #faf5e4;
+    --text-secondary: #c4a96a;
+    --text-muted: #8a7650;
+    
+    /* 边框：金色 */
+    --border-color: rgba(212, 175, 55, 0.15);
+    --border-btn: rgba(212, 175, 55, 0.25);
+    --perf-border: rgba(212, 175, 55, 0.2);
+    
+    /* 按钮 */
+    --btn-secondary-bg: rgba(212, 175, 55, 0.08);
+    --btn-secondary-hover: rgba(212, 175, 55, 0.15);
+    --opt-btn-bg: rgba(212, 175, 55, 0.05);
+    
+    /* 分数颜色 */
+    --score-color-player: #4ade80;
+    --score-color-ai: #f87171;
+    --score-color-draw: #d4af37;
+    
+    /* 模式徽章 */
+    --mode-badge-bg: rgba(212, 175, 55, 0.15);
+    --mode-badge-text: #d4af37;
+    
+    /* 灵动岛 */
+    --island-accent: #d4af37;
+    --island-border: rgba(212, 175, 55, 0.3);
+    --island-shadow: rgba(212, 175, 55, 0.15);
+    
+    /* 记忆面板 */
+    --memory-bg: rgba(212, 175, 55, 0.05);
+    --memory-border: rgba(212, 175, 55, 0.1);
+    
+    /* 动画：慢速优雅 */
+    --duration-fast: 0.25s;
+    --duration-normal: 0.45s;
+    --duration-slow: 0.65s;
+    --ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+/* ========== 简约风格 (Minimal) ========== */
+[data-perf="on"][data-style="minimal"] {
+    /* 主色调：纯白/灰 */
+    --accent: #ffffff;
+    --accent-gradient: linear-gradient(135deg, #ffffff, #e0e0e0);
+    --accent-shadow: rgba(255, 255, 255, 0.1);
+    --status-glow: rgba(255, 255, 255, 0.05);
+    --board-shadow-2: rgba(255, 255, 255, 0.03);
+    
+    /* 背景：纯黑 */
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #111111;
+    --bg-tertiary: #1a1a1a;
+    --bg-card: rgba(255, 255, 255, 0.02);
+    --bg-settings-card: linear-gradient(145deg, #0f0f0f, #080808);
+    
+    /* 文字：纯白 */
+    --text-primary: #ffffff;
+    --text-secondary: #888888;
+    --text-muted: #555555;
+    
+    /* 边框：极淡 */
+    --border-color: rgba(255, 255, 255, 0.04);
+    --border-btn: rgba(255, 255, 255, 0.08);
+    --perf-border: rgba(255, 255, 255, 0.06);
+    
+    /* 按钮 */
+    --btn-secondary-bg: rgba(255, 255, 255, 0.03);
+    --btn-secondary-hover: rgba(255, 255, 255, 0.06);
+    --opt-btn-bg: rgba(255, 255, 255, 0.02);
+    
+    /* 分数颜色 */
+    --score-color-player: #666666;
+    --score-color-ai: #999999;
+    --score-color-draw: #777777;
+    
+    /* 模式徽章 */
+    --mode-badge-bg: rgba(255, 255, 255, 0.05);
+    --mode-badge-text: #aaaaaa;
+    
+    /* 灵动岛 */
+    --island-accent: #ffffff;
+    --island-border: rgba(255, 255, 255, 0.06);
+    --island-shadow: none;
+    
+    /* 记忆面板 */
+    --memory-bg: rgba(255, 255, 255, 0.02);
+    --memory-border: rgba(255, 255, 255, 0.04);
+    
+    /* 动画：快速干脆 */
+    --duration-fast: 0.12s;
+    --duration-normal: 0.2s;
+    --duration-slow: 0.3s;
+    --ease-spring: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ========== 毛玻璃风格 (Glassmorphism) ========== */
+[data-perf="on"][data-style="glassmorphism"] {
+    /* 主色调：紫蓝渐变 */
+    --accent: #a78bfa;
+    --accent-gradient: linear-gradient(135deg, #818cf8, #a78bfa, #e879f9);
+    --accent-shadow: rgba(139, 92, 246, 0.35);
+    --status-glow: rgba(139, 92, 246, 0.15);
+    --board-shadow-2: rgba(139, 92, 246, 0.1);
+    
+    /* 背景：深紫蓝 */
+    --bg-primary: #0f0a1a;
+    --bg-secondary: #150f24;
+    --bg-tertiary: #1a1428;
+    --bg-card: rgba(139, 92, 246, 0.08);
+    --bg-settings-card: linear-gradient(145deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.08));
+    
+    /* 文字：浅紫白 */
+    --text-primary: #f5f3ff;
+    --text-secondary: #c4b5fd;
+    --text-muted: #8b7cbd;
+    
+    /* 边框：紫蓝 */
+    --border-color: rgba(139, 92, 246, 0.12);
+    --border-btn: rgba(139, 92, 246, 0.2);
+    --perf-border: rgba(139, 92, 246, 0.15);
+    
+    /* 按钮 */
+    --btn-secondary-bg: rgba(139, 92, 246, 0.1);
+    --btn-secondary-hover: rgba(139, 92, 246, 0.18);
+    --opt-btn-bg: rgba(139, 92, 246, 0.06);
+    
+    /* 分数颜色 */
+    --score-color-player: #4ade80;
+    --score-color-ai: #f87171;
+    --score-color-draw: #a78bfa;
+    
+    /* 模式徽章 */
+    --mode-badge-bg: rgba(139, 92, 246, 0.15);
+    --mode-badge-text: #a78bfa;
+    
+    /* 灵动岛 */
+    --island-accent: #a78bfa;
+    --island-border: rgba(139, 92, 246, 0.2);
+    --island-shadow: rgba(139, 92, 246, 0.2);
+    
+    /* 记忆面板 */
+    --memory-bg: rgba(139, 92, 246, 0.06);
+    --memory-border: rgba(139, 92, 246, 0.1);
+    
+    /* 动画：中等流畅 */
+    --duration-fast: 0.18s;
+    --duration-normal: 0.35s;
+    --duration-slow: 0.5s;
+    --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/* ========== 简约风格特殊覆盖 ========== */
+[data-perf="on"][data-style="minimal"] .status-bar,
+[data-perf="on"][data-style="minimal"] .btn,
+[data-perf="on"][data-style="minimal"] .icon-btn,
+[data-perf="on"][data-style="minimal"] .opt-btn,
+[data-perf="on"][data-style="minimal"] .settings-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+[data-perf="on"][data-style="minimal"] .btn-primary {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+}
+
+[data-perf="on"][data-style="minimal"] .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-btn);
+}
+
+/* ========== 毛玻璃风格特殊覆盖 ========== */
+[data-perf="on"][data-style="glassmorphism"] .status-bar,
+[data-perf="on"][data-style="glassmorphism"] .settings-panel,
+[data-perf="on"][data-style="glassmorphism"] .btn-secondary,
+[data-perf="on"][data-style="glassmorphism"] .icon-btn {
+    backdrop-filter: blur(20px) saturate(1.3);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+}
+
+[data-perf="on"][data-style="glassmorphism"] .btn-primary {
+    background: var(--accent-gradient);
+    box-shadow: 0 4px 20px var(--accent-shadow), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* ========== 奢华风格特殊覆盖 ========== */
+[data-perf="on"][data-style="luxury"] .btn-primary {
+    background: var(--accent-gradient);
+    box-shadow: 0 4px 20px var(--accent-shadow), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+[data-perf="on"][data-style="luxury"] .status-bar {
+    border: 1px solid var(--border-btn);
+    box-shadow: var(--status-glow-enhanced), inset 0 1px 0 rgba(212, 175, 55, 0.1);
+}
+
+[data-perf="on"][data-style="luxury"] .settings-panel {
+    border: 1px solid var(--border-btn);
+    box-shadow: var(--settings-card-shadow), 0 0 40px rgba(212, 175, 55, 0.05);
+}
+
+/* ========== 奢华风格 · 浅色主题 ========== */
+[data-perf="on"][data-style="luxury"][data-theme="light"] {
+    --bg-primary: #faf6ee;
+    --bg-secondary: #f5efe3;
+    --bg-tertiary: #ede5d5;
+    --bg-card: rgba(180, 140, 60, 0.06);
+    --bg-settings-card: linear-gradient(145deg, #faf5e8, #f0e8d5);
+    --text-primary: #2a1f14;
+    --text-secondary: #8a7650;
+    --text-muted: #b0a080;
+    --border-color: rgba(160, 120, 40, 0.12);
+    --border-btn: rgba(160, 120, 40, 0.2);
+    --perf-border: rgba(160, 120, 40, 0.15);
+    --btn-secondary-bg: rgba(160, 120, 40, 0.06);
+    --btn-secondary-hover: rgba(160, 120, 40, 0.12);
+    --opt-btn-bg: rgba(160, 120, 40, 0.04);
+    --board-shadow-2: rgba(180, 140, 40, 0.08);
+    --status-glow: rgba(180, 140, 40, 0.12);
+    --score-color-player: #16a34a;
+    --score-color-ai: #dc2626;
+    --score-color-draw: #b8860b;
+    --mode-badge-bg: rgba(180, 140, 40, 0.1);
+    --mode-badge-text: #b8860b;
+    --memory-bg: rgba(180, 140, 40, 0.04);
+    --memory-border: rgba(180, 120, 40, 0.08);
+    --win-overlay-bg: rgba(250, 246, 238, 0.8);
+    --island-bg: rgba(250, 246, 238, 0.3);
+    --island-bg-hover: rgba(250, 246, 238, 0.45);
+    --island-bg-playing: rgba(250, 246, 238, 0.35);
+    --island-border: rgba(160, 120, 40, 0.15);
+    --island-shadow: rgba(160, 120, 40, 0.1);
+    --island-panel-bg: rgba(250, 246, 238, 0.5);
+    --island-panel-border: rgba(160, 120, 40, 0.12);
+    --island-panel-shadow: rgba(160, 120, 40, 0.15);
+    --island-bg-solid: rgba(250, 246, 238, 0.97);
+    --island-panel-bg-solid: rgba(248, 244, 236, 0.98);
+}
+
+/* ========== 简约风格 · 浅色主题 ========== */
+[data-perf="on"][data-style="minimal"][data-theme="light"] {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #eeeeee;
+    --bg-tertiary: #e5e5e5;
+    --bg-card: rgba(0, 0, 0, 0.02);
+    --bg-settings-card: linear-gradient(145deg, #ffffff, #f8f8f8);
+    --text-primary: #1a1a1a;
+    --text-secondary: #888888;
+    --text-muted: #bbbbbb;
+    --border-color: rgba(0, 0, 0, 0.06);
+    --border-btn: rgba(0, 0, 0, 0.1);
+    --perf-border: rgba(0, 0, 0, 0.08);
+    --btn-secondary-bg: rgba(0, 0, 0, 0.04);
+    --btn-secondary-hover: rgba(0, 0, 0, 0.08);
+    --opt-btn-bg: rgba(0, 0, 0, 0.03);
+    --board-shadow-2: rgba(0, 0, 0, 0.03);
+    --status-glow: rgba(0, 0, 0, 0.03);
+    --score-color-player: #555555;
+    --score-color-ai: #999999;
+    --score-color-draw: #777777;
+    --mode-badge-bg: rgba(0, 0, 0, 0.05);
+    --mode-badge-text: #888888;
+    --memory-bg: rgba(0, 0, 0, 0.02);
+    --memory-border: rgba(0, 0, 0, 0.04);
+    --win-overlay-bg: rgba(255, 255, 255, 0.8);
+    --island-bg: rgba(255, 255, 255, 0.3);
+    --island-bg-hover: rgba(255, 255, 255, 0.45);
+    --island-bg-playing: rgba(255, 255, 255, 0.35);
+    --island-border: rgba(0, 0, 0, 0.08);
+    --island-shadow: rgba(0, 0, 0, 0.05);
+    --island-panel-bg: rgba(255, 255, 255, 0.5);
+    --island-panel-border: rgba(0, 0, 0, 0.06);
+    --island-panel-shadow: rgba(0, 0, 0, 0.08);
+    --island-bg-solid: rgba(245, 245, 245, 0.97);
+    --island-panel-bg-solid: rgba(248, 248, 248, 0.98);
+}
+
+/* ========== 毛玻璃风格 · 浅色主题 ========== */
+[data-perf="on"][data-style="glassmorphism"][data-theme="light"] {
+    --bg-primary: #f5f3ff;
+    --bg-secondary: #ede9fe;
+    --bg-tertiary: #e0d8f5;
+    --bg-card: rgba(139, 92, 246, 0.04);
+    --bg-settings-card: linear-gradient(145deg, #f5f3ff, #ede9fe);
+    --text-primary: #1e1b4b;
+    --text-secondary: #6d5acd;
+    --text-muted: #a78bfa;
+    --border-color: rgba(139, 92, 246, 0.1);
+    --border-btn: rgba(139, 92, 246, 0.18);
+    --perf-border: rgba(139, 92, 246, 0.12);
+    --btn-secondary-bg: rgba(139, 92, 246, 0.06);
+    --btn-secondary-hover: rgba(139, 92, 246, 0.12);
+    --opt-btn-bg: rgba(139, 92, 246, 0.04);
+    --board-shadow-2: rgba(139, 92, 246, 0.06);
+    --status-glow: rgba(139, 92, 246, 0.08);
+    --score-color-player: #16a34a;
+    --score-color-ai: #dc2626;
+    --score-color-draw: #7c3aed;
+    --mode-badge-bg: rgba(139, 92, 246, 0.1);
+    --mode-badge-text: #7c3aed;
+    --memory-bg: rgba(139, 92, 246, 0.03);
+    --memory-border: rgba(139, 92, 246, 0.06);
+    --win-overlay-bg: rgba(245, 243, 255, 0.8);
+    --island-bg: rgba(245, 243, 255, 0.3);
+    --island-bg-hover: rgba(245, 243, 255, 0.45);
+    --island-bg-playing: rgba(245, 243, 255, 0.35);
+    --island-border: rgba(139, 92, 246, 0.12);
+    --island-shadow: rgba(139, 92, 246, 0.08);
+    --island-panel-bg: rgba(245, 243, 255, 0.5);
+    --island-panel-border: rgba(139, 92, 246, 0.1);
+    --island-panel-shadow: rgba(139, 92, 246, 0.12);
+    --island-bg-solid: rgba(245, 243, 255, 0.97);
+    --island-panel-bg-solid: rgba(248, 246, 255, 0.98);
+}
+
+[data-perf="off"] {
+    --status-radius: 14px;
+    --status-padding: 8px 14px;
+    --btn-radius: 10px;
+    --btn-padding: 10px 18px;
+    --opt-radius: 8px;
+    --opt-padding: 10px 4px;
+    --board-radius: 8px;
+    --board-glow: 0 4px 20px var(--board-shadow-1), 0 0 40px var(--board-shadow-2);
+    --header-size: 1.4rem;
+    --status-glow-enhanced: 0 2px 12px var(--status-glow);
+    --transition-speed: 0.25s;
+    --win-radius: 8px;
+    --font-weight-title: 700;
+    --font-weight-btn: 600;
+    --letter-spacing: 1px;
+    --score-font-size: 0.95rem;
+    --settings-card-radius: 16px;
+    --settings-card-padding: 20px 24px;
+    --settings-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --opt-btn-active-shadow: 0 2px 8px var(--accent-shadow);
+    --btn-primary-shadow: 0 3px 12px var(--accent-shadow);
+    --win-text-size: 1.5rem;
+    --win-icon-size: 3rem;
+    --win-detail-size: 0.9rem;
+    --piece-indicator-size: 18px;
+    --chip-padding: 3px 10px;
+    --chip-radius: 12px;
+    --chip-font-size: 0.78rem;
+    --chip-font-weight: 400;
+    --score-dot-size: 6px;
+    --score-label-size: 0.68rem;
+    --score-label-weight: 400;
+    --score-gap: 6px;
+    --controls-gap: 10px;
+    --controls-padding: 10px 0;
+    --opt-group-gap: 8px;
+    --setting-label-size: 0.85rem;
+    --setting-label-weight: 400;
+    --settings-title-size: 1.15rem;
+    --settings-title-weight: 700;
+    --spinner-size: 16px;
+    --spinner-width: 2px;
+    --thinking-padding: 8px 16px;
+    --thinking-radius: 20px;
+    --thinking-weight: 400;
+    --icon-btn-size: 36px;
+    --icon-btn-border: 1px;
+    --icon-btn-shadow: none;
+    --opt-btn-weight: 500;
+    --opt-btn-border-width: 1px;
+    --btn-letter-spacing: 0.5px;
+    --btn-secondary-border-width: 1px;
+    --memory-radius: 8px;
+    --memory-padding: 8px 12px;
+    --win-content-padding: 20px;
+    --island-accent: transparent;
+}
+
+/* ========== 无障碍 ========== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========== 全局重置 ========== */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei UI", "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+    color: var(--text-primary);
+    user-select: none; -webkit-user-select: none;
+    transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 深浅主题切换全局过渡 */
+#app,
+#app *,
+.island-pill,
+.island-expanded,
+.island-top,
+.island-song-wrap,
+.island-controls,
+.ctrl-btn,
+.ctrl-play,
+.progress-track,
+.island-cover {
+    transition-property: background-color, border-color, box-shadow, color, fill, stroke;
+    transition-duration: 0.4s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 排除不需要过渡的元素 */
+canvas, video, iframe, .progress-fill, .spinner {
+    transition: none !important;
+}
+
+#app {
+    display: flex; flex-direction: column; align-items: center;
+    height: 100%; max-width: 500px; margin: 0 auto;
+    padding: 8px 12px; position: relative;
+}
+
+/* ========== 顶部标题 ========== */
+#header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
+    padding: 8px 12px 4px;
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 20;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.header-left h1 {
+    font-size: var(--header-size);
+    font-weight: var(--font-weight-title);
+    letter-spacing: var(--letter-spacing);
+    background: var(--accent-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: font-size 0.3s ease, font-weight 0.3s ease, letter-spacing 0.3s ease;
+}
+
+@keyframes underlineGrow {
+    from { width: 0; opacity: 0; }
+    to { width: 40px; opacity: 0.6; }
+}
+
+/* ========== 图标容器 ========== */
+.icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.icon-wrap svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.btn .icon-wrap {
+    width: 18px;
+    height: 18px;
+}
+
+.btn:hover .icon-wrap {
+    transform: scale(1.1);
+}
+
+.btn:active .icon-wrap {
+    transform: scale(0.9);
+}
+
+/* 胜利图标 */
+#win-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+}
+
+#win-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* 棋子指示器图标 */
+.piece .icon-wrap {
+    width: 14px;
+    height: 14px;
+}
+
+/* 记忆面板图标 */
+.memory-title .icon-wrap {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+}
+
+/* ========== 主题切换按钮 ========== */
+.icon-btn {
+    width: var(--icon-btn-size); height: var(--icon-btn-size); border: none; border-radius: 50%;
+    background: var(--btn-secondary-bg); color: var(--text-primary);
+    font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    border: var(--icon-btn-border) solid var(--border-btn);
+    position: relative; z-index: 1;
+    box-shadow: var(--icon-btn-shadow);
+}
+.icon-btn:active { transform: scale(0.88); background: var(--btn-secondary-hover); }
+.icon-btn:hover { transform: scale(1.08); box-shadow: 0 3px 12px rgba(0,0,0,0.15); }
+
+#theme-icon { display: inline-flex; align-items: center; justify-content: center; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+#theme-icon svg { width: 20px; height: 20px; transition: opacity 0.3s ease, transform 0.3s ease; }
+#theme-icon .icon-sun,
+#theme-icon .icon-moon { position: absolute; }
+/* 深色模式：显示月亮，隐藏太阳 */
+#theme-icon .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+#theme-icon .icon-sun  { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+/* 浅色模式：显示太阳，隐藏月亮 */
+#theme-icon.icon-sun .icon-moon { opacity: 0; transform: rotate(90deg) scale(0.5); }
+#theme-icon.icon-sun .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+#theme-icon.zoom-in { animation: themeZoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+@keyframes themeZoomIn {
+    0%   { transform: scale(0.2) rotate(-30deg); opacity: 0.3; }
+    50%  { transform: scale(1.3) rotate(10deg); opacity: 1; }
+    75%  { transform: scale(0.95) rotate(-3deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* ========== 状态栏 ========== */
+#status-bar {
+    position: relative;
+    width: 100%; display: flex; justify-content: space-between; align-items: center;
+    padding: var(--status-padding); border-radius: var(--status-radius);
+    margin: 6px 0; flex-shrink: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease,
+                border-radius 0.25s ease, padding 0.25s ease;
+    will-change: transform, opacity;
+    box-shadow: var(--status-glow-enhanced);
+}
+
+#player-indicator {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.9rem; min-width: 0;
+}
+
+/* AI 对决模式徽章 */
+#mode-badge {
+    display: none;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--mode-badge-bg);
+    color: var(--mode-badge-text);
+    letter-spacing: 0.5px;
+    animation: badgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: background 0.5s ease, color 0.5s ease;
+    white-space: nowrap;
+}
+#mode-badge.visible { display: inline-block; }
+
+/* 自动战斗徽章 */
+#auto-badge {
+    display: none;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: var(--auto-badge-bg);
+    color: var(--auto-badge-text);
+    letter-spacing: 0.3px;
+    animation: badgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: background 0.5s ease, color 0.5s ease;
+    white-space: nowrap;
+}
+#auto-badge.visible { display: inline-block; }
+
+@keyframes badgePop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    70% { transform: scale(0.95); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+#status-text {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    font-weight: 500;
+}
+
+#status-text.fade-out { opacity: 0; transform: translateY(-4px); }
+#status-text.fade-in { animation: fadeSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+.piece {
+    display: inline-block; width: var(--piece-indicator-size); height: var(--piece-indicator-size); border-radius: 50%;
+    flex-shrink: 0;
+    transition: transform 0.4s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+.piece.black { background: radial-gradient(circle at 35% 35%, #555, #111); box-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+.piece.white { background: radial-gradient(circle at 35% 35%, #fff, #ccc); box-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+.piece.bounce { animation: pieceBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+.info-chip {
+    font-size: var(--chip-font-size); color: var(--text-muted);
+    background: var(--btn-secondary-bg);
+    padding: var(--chip-padding); border-radius: var(--chip-radius);
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, background 0.3s ease;
+    font-weight: var(--chip-font-weight);
+}
+.info-chip strong { color: var(--accent); transition: color 0.5s ease; }
+.info-chip:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+#score-board { display: flex; gap: var(--score-gap); font-size: 0.78rem; align-items: center; }
+.score-item { color: var(--text-secondary); transition: color 0.3s ease; display: flex; align-items: center; gap: 3px; }
+.score-dot { display: inline-block; width: var(--score-dot-size); height: var(--score-dot-size); border-radius: 50%; flex-shrink: 0; transition: transform 0.3s ease; }
+.score-player .score-dot { background: var(--score-color-player); }
+.score-ai .score-dot { background: var(--score-color-ai); }
+.score-draw .score-dot { background: var(--score-color-draw); }
+.score-label {
+    font-size: var(--score-label-size);
+    color: var(--text-muted);
+    transition: color 0.3s ease, opacity 0.3s ease;
+    font-weight: var(--score-label-weight);
+}
+.score-item strong {
+    font-size: var(--score-font-size); font-weight: 600;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s ease, font-size 0.3s ease;
+}
+.score-item:hover strong { transform: scale(1.1); }
+.score-item strong.pop { animation: scorePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.score-player strong { color: var(--score-color-player); }
+.score-ai strong { color: var(--score-color-ai); }
+.score-draw strong { color: var(--score-color-draw); }
+.score-divider { color: var(--text-muted); font-size: 0.5rem; opacity: 0.4; }
+
+/* ========== 记忆面板 ========== */
+#memory-panel {
+    width: 100%;
+    background: var(--memory-bg);
+    border: 1px solid var(--memory-border);
+    border-radius: var(--memory-radius);
+    padding: var(--memory-padding);
+    margin-bottom: 6px;
+    flex-shrink: 0;
+    transition: opacity 0.3s ease, background 0.3s ease, border-color 0.3s ease, border-radius 0.3s ease, padding 0.3s ease;
+    animation: fadeSlideIn 0.3s ease;
+}
+#memory-panel.hidden { display: none; }
+.memory-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+}
+.memory-title {
+    font-size: 0.78rem; color: var(--text-secondary);
+    font-weight: 600; letter-spacing: 0.5px;
+    transition: color 0.5s ease;
+}
+
+.memory-stats {
+    display: flex; gap: 12px; font-size: 0.72rem; color: var(--text-muted);
+    flex-wrap: wrap;
+}
+.memory-stat {
+    display: flex; align-items: center; gap: 4px;
+}
+.memory-stat strong {
+    color: var(--text-secondary); font-weight: 600;
+    transition: color 0.3s ease;
+}
+.memory-stat:hover strong { color: var(--text-primary); }
+
+.memory-stat .stat-dot {
+    width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+}
+.stat-dot.black { background: #888; }
+.stat-dot.white { background: #ddd; border: 1px solid rgba(0,0,0,0.2); }
+.stat-dot.draw { background: var(--score-color-draw); }
+.memory-bar {
+    width: 100%; height: 4px; border-radius: 2px;
+    background: var(--btn-secondary-bg);
+    margin-top: 8px; overflow: hidden;
+    display: flex;
+}
+.memory-bar-segment {
+    height: 100%; transition: width 0.5s ease;
+}
+.memory-bar-segment.black { background: #888; }
+.memory-bar-segment.white { background: #ddd; }
+.memory-bar-segment.draw { background: var(--score-color-draw); }
+
+/* 记忆面板底部 */
+.memory-footer {
+    display: flex; justify-content: flex-end; margin-top: 8px;
+}
+.memory-clear-btn {
+    font-size: 0.65rem; color: var(--text-muted);
+    background: none; border: 1px solid var(--border-color);
+    border-radius: 8px; padding: 2px 8px; cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+.memory-clear-btn:active { background: var(--btn-secondary-bg); transform: scale(0.95); }
+
+
+/* ========== 棋盘容器 ========== */
+#board-container {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    width: 100%; position: relative; min-height: 0;
+}
+#board-canvas {
+    border-radius: var(--board-radius);
+    box-shadow: var(--board-glow);
+    touch-action: none; cursor: crosshair;
+    transition: box-shadow 0.5s ease, border-radius 0.3s ease;
+    position: relative; z-index: 1;
+}
+body.battle-mode #board-canvas { cursor: default; }
+
+/* ========== 胜利遮罩 ========== */
+#win-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--win-overlay-bg);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--win-radius); z-index: 10;
+    animation: winOverlayEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: border-radius 0.3s ease;
+}
+@keyframes winOverlayEnter {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#win-content { text-align: center; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: var(--win-content-padding); }
+#win-icon { font-size: var(--win-icon-size); margin-bottom: 8px; animation: winIconFloat 2s ease-in-out infinite; }
+#win-text { font-size: var(--win-text-size); margin-bottom: 8px; color: var(--accent); font-weight: 700; }
+
+#win-detail { font-size: var(--win-detail-size); color: var(--text-secondary); margin-bottom: 16px; }
+
+/* ========== 控制按钮 ========== */
+#controls {
+    display: flex; gap: var(--controls-gap); padding: var(--controls-padding);
+    flex-shrink: 0; width: 100%; justify-content: center;
+}
+.btn {
+    padding: var(--btn-padding); border: none; border-radius: var(--btn-radius);
+    font-size: 0.9rem; font-weight: var(--font-weight-btn); cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    letter-spacing: var(--btn-letter-spacing); display: flex; align-items: center; gap: 5px;
+    will-change: transform;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(0.96); transition-duration: 0.06s; }
+.btn-icon { font-size: 1rem; }
+.btn-primary {
+    background: var(--accent-gradient); color: #fff;
+    box-shadow: var(--btn-primary-shadow);
+    transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1), background var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+.btn-primary:active { box-shadow: 0 1px 6px var(--accent-shadow); }
+.btn-secondary {
+    background: var(--btn-secondary-bg); color: var(--text-primary);
+    border: var(--btn-secondary-border-width) solid var(--border-btn);
+    transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1), background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+.btn-secondary:active { background: var(--btn-secondary-hover); }
+.btn.disabled { opacity: 0.4; pointer-events: none; }
+
+/* 暂停按钮 */
+#btn-battle-pause { transition: transform var(--transition-speed) ease, background var(--transition-speed) ease; }
+#btn-battle-pause .btn-icon { transition: transform 0.3s ease; }
+#btn-battle-pause:active .btn-icon { transform: scale(1.2); }
+
+/* ========== 设置面板 ========== */
+#settings-panel {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 20; display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.25s ease;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+#settings-panel.closing {
+    animation: fadeOut 0.2s ease forwards;
+}
+#settings-panel.closing #settings-content {
+    animation: slideDown 0.25s ease forwards;
+}
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes slideDown { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(20px) scale(0.97); } }
+#settings-mask {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-settings);
+    transition: background 0.5s ease;
+}
+
+#settings-content {
+    position: relative; z-index: 1;
+    background: var(--bg-settings-card);
+    border-radius: var(--settings-card-radius);
+    padding: var(--settings-card-padding);
+    width: 85%; max-width: 360px;
+    box-shadow: var(--settings-card-shadow);
+    border: 1px solid var(--border-color);
+    animation: settingsEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-height: 85vh; overflow-y: auto;
+    transition: background 0.5s ease, border-color 0.5s ease, border-radius 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+}
+@keyframes settingsEnter {
+    from { opacity: 0; transform: translateY(30px) scale(0.92); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.settings-header h3 { font-size: var(--settings-title-size); color: var(--accent); transition: color 0.5s ease; font-weight: var(--settings-title-weight); }
+.setting-item { margin-bottom: 16px; }
+.setting-item label { display: block; font-size: var(--setting-label-size); color: var(--text-secondary); margin-bottom: 8px; transition: color 0.5s ease; font-weight: var(--setting-label-weight); }
+.setting-hint { display: block; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3; }
+.btn-preview-all {
+    display: block; width: 100%; margin-top: 8px; padding: 8px 0;
+    font-size: 0.8rem; font-weight: 600; color: var(--accent);
+    background: rgba(128,128,128,0.08); border: 1px solid rgba(128,128,128,0.15);
+    border-radius: 8px; cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.btn-preview-all:hover { background: rgba(128,128,128,0.15); border-color: var(--accent); }
+.btn-preview-all:active { transform: scale(0.97); }
+.label-danger { color: #ff4444; }
+.hint-danger { color: #ff6666; }
+.btn-full-width { width: 100%; margin-top: 8px; }
+.btn-preview-all:focus-visible, .opt-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.opt-group { display: flex; gap: var(--opt-group-gap); }
+.opt-btn {
+    flex: 1; padding: var(--opt-padding);
+    border: var(--opt-btn-border-width) solid var(--border-btn); border-radius: var(--opt-radius);
+    background: var(--opt-btn-bg); color: var(--text-secondary);
+    font-size: 0.85rem; font-weight: var(--opt-btn-weight); cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    position: relative; z-index: 1;
+}
+.opt-btn:active { transform: scale(0.92); }
+.opt-btn.active {
+    background: var(--accent-gradient); color: #fff;
+    border-color: transparent;
+    box-shadow: var(--opt-btn-active-shadow);
+}
+
+
+/* 设置面板中条件显示区域的过渡 */
+#pve-settings, #battle-settings {
+    max-height: 600px;
+    transition: opacity 0.3s ease, max-height 0.35s ease;
+    overflow: hidden;
+}
+
+/* ========== AI 思考提示 ========== */
+#thinking {
+    position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 8px;
+    padding: var(--thinking-padding); background: var(--thinking-bg);
+    border-radius: var(--thinking-radius); font-size: 0.85rem; color: var(--accent);
+    z-index: 5; animation: thinkingEnter 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid var(--border-color);
+    transition: background 0.5s ease, border-color 0.5s ease;
+    font-weight: var(--thinking-weight);
+}
+@keyframes thinkingEnter {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.9); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+.spinner {
+    width: var(--spinner-size); height: var(--spinner-size);
+    border: var(--spinner-width) solid var(--border-btn); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+
+.hidden { display: none !important; }
+
+/* ========== 动画 ========== */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeSlideIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pieceBounce { 0% { transform: scale(0.4); opacity: 0.5; } 50% { transform: scale(1.15); } 70% { transform: scale(0.95); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes scorePop { 0% { transform: scale(0.8); } 40% { transform: scale(1.3); } 60% { transform: scale(0.95); } 100% { transform: scale(1); } }
+@keyframes winIconFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-5px) rotate(2deg); } 75% { transform: translateY(-3px) rotate(-2deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes boardEnter {
+    from { opacity: 0.5; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ========== 灵动岛音乐播放器 v4 ========== */
+
+/* 药丸按钮 */
+.music-island {
+    position: relative;
+    z-index: 20;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.island-pill {
+    width: 46px;
+    height: 26px;
+    background: var(--island-bg);
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 6px var(--island-shadow);
+    border: 0.5px solid var(--island-border);
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease, opacity 0.2s ease;
+}
+
+.island-icon {
+    color: var(--accent);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.music-island:hover .island-pill {
+    background: var(--island-bg-hover);
+    box-shadow: 0 2px 12px var(--island-shadow);
+}
+
+.music-island:hover .island-icon { opacity: 1; }
+
+.music-island.playing .island-pill {
+    background: var(--island-bg-playing);
+    box-shadow: 0 2px 16px var(--accent-shadow);
+}
+
+.music-island.playing .island-icon {
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* 展开面板 - 在药丸下方展开 */
+.island-expanded {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) scaleY(0.92);
+    transform-origin: top center;
+    width: 244px;
+    background: var(--island-panel-bg);
+    border-radius: 20px;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease, box-shadow 0.3s ease;
+    box-shadow: 0 16px 48px var(--island-panel-shadow), 0 0 0 0.5px var(--island-panel-border);
+    z-index: 100;
+}
+
+.music-island.expanded .island-pill {
+    opacity: 0;
+    transform: scale(0.5);
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.music-island.expanded .island-expanded {
+    opacity: 1;
+    transform: translateX(-50%) scaleY(1);
+    pointer-events: auto;
+}
+
+/* 顶部装饰 */
+.island-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.island-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.dot:nth-child(2) {
+    background: var(--accent);
+    opacity: 0.6;
+}
+
+.music-island.playing .dot:nth-child(2) {
+    opacity: 1;
+    animation: dotGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes dotGlow {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* 歌曲信息 */
+.island-song-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.island-cover {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.island-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1));
+}
+
+.music-island.playing .island-cover {
+    animation: coverGlow 3s ease-in-out infinite;
+}
+
+@keyframes coverGlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+}
+
+.island-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.island-song {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.island-artist {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    line-height: 1.2;
+}
+
+/* 进度条 */
+.island-progress {
+    margin-bottom: 12px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 3px;
+    background: var(--btn-secondary-bg);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: height 0.15s ease;
+}
+
+.progress-track:hover { height: 5px; }
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent-gradient);
+    border-radius: 3px;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent-shadow);
+    transition: transform 0.15s ease;
+}
+
+.progress-track:hover .progress-fill::after {
+    transform: translateY(-50%) scale(1);
+}
+
+.progress-time {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 控制按钮 */
+.island-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.ctrl-btn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: var(--btn-secondary-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.ctrl-btn:active {
+    transform: scale(0.88);
+    background: var(--btn-secondary-hover);
+}
+
+.ctrl-btn svg { display: block; }
+
+.ctrl-play {
+    width: 42px;
+    height: 42px;
+    background: var(--accent-gradient);
+    color: #fff;
+    box-shadow: 0 3px 14px var(--accent-shadow);
+}
+
+.ctrl-play:active {
+    box-shadow: 0 1px 6px var(--accent-shadow);
+    transform: scale(0.92);
+}
+
+/* 加载状态 */
+.music-island.loading .island-pill {
+    animation: islandPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes islandPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.02); opacity: 0.9; }
+}
+
+/* 错误状态 */
+.music-island.error .island-icon { color: #ff4444; }
+
+/* 毛玻璃关闭状态 - 明显的纯色质感（与毛玻璃形成强对比） */
+.music-island.no-glass .island-pill {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--island-bg-solid) !important;
+    border: 1px solid var(--island-border);
+    box-shadow: 0 1px 4px var(--island-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.music-island.no-glass .island-expanded {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--island-panel-bg-solid) !important;
+    border: 1px solid var(--island-panel-border);
+    box-shadow: 0 12px 36px var(--island-panel-shadow);
+}
+
+/* 毛玻璃关闭时 hover/playing 也锁定为 solid */
+.music-island.no-glass:hover .island-pill {
+    background: var(--island-bg-solid) !important;
+}
+
+.music-island.no-glass.playing .island-pill {
+    background: var(--island-bg-solid) !important;
+}
+
+/* ========== 灵动岛深浅主题差异化 ========== */
+
+/* 深色模式灵动岛 */
+[data-theme="dark"] .island-pill {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3), inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .island-expanded {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.5),
+        0 0 0 0.5px rgba(255, 255, 255, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .island-cover {
+    box-shadow: 0 4px 18px rgba(99, 102, 241, 0.4);
+}
+
+[data-theme="dark"] .ctrl-play {
+    box-shadow: 0 3px 18px rgba(245, 175, 25, 0.35);
+}
+
+/* 浅色模式灵动岛 */
+[data-theme="light"] .island-pill {
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06), inset 0 0.5px 0 rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="light"] .island-expanded {
+    border-color: rgba(0, 0, 0, 0.06);
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.12),
+        0 0 0 0.5px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="light"] .island-cover {
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.2);
+}
+
+[data-theme="light"] .ctrl-play {
+    box-shadow: 0 3px 14px rgba(232, 93, 4, 0.25);
+}
+
+[data-theme="light"] .dot {
+    background: var(--text-muted);
+}
+
+
+/* ========== 精致模式全局动画增强 ========== */
+[data-perf="on"] body, [data-perf="on"] button, [data-perf="on"] span,
+[data-perf="on"] div, [data-perf="on"] p, [data-perf="on"] h1, [data-perf="on"] h2,
+[data-perf="on"] label, [data-perf="on"] input, [data-perf="on"] select {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 精致模式 - 按钮 */
+[data-perf="on"] .btn {
+    transition: transform var(--duration-normal) var(--ease-smooth), box-shadow var(--duration-normal) var(--ease-smooth), opacity var(--duration-fast) ease;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-perf="on"] .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at var(--ripple-x, 50%) var(--ripple-y, 50%), rgba(255,255,255,0.15) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+[data-perf="on"] .btn:active::after {
+    opacity: 1;
+    transition-duration: 0s;
+}
+
+[data-perf="on"] .btn:hover {
+    transform: translateY(-2px);
+}
+
+[data-perf="on"] .btn:active {
+    transform: translateY(0) scale(0.96);
+    transition-duration: 0.1s;
+}
+
+/* 精致模式 - 主按钮光效 */
+[data-perf="on"] .btn-primary {
+    box-shadow: var(--btn-primary-shadow);
+}
+
+[data-perf="on"] .btn-primary:hover {
+    box-shadow: 0 8px 28px var(--accent-shadow);
+    opacity: 0.92;
+}
+
+[data-perf="on"] .btn-primary:active {
+    box-shadow: 0 2px 10px var(--accent-shadow);
+}
+
+/* 精致模式 - 次按钮精致化 */
+[data-perf="on"] .btn-secondary {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 0 0 0.5px var(--border-btn);
+}
+
+[data-perf="on"] .btn-secondary:hover {
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12), 0 0 0 0.5px var(--border-btn);
+}
+
+/* 精致模式 - 选项按钮 */
+[data-perf="on"] .opt-btn {
+    transition: transform var(--duration-normal) var(--ease-smooth), box-shadow var(--duration-normal) var(--ease-smooth), background-color var(--duration-fast) ease;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-perf="on"] .opt-btn:active {
+    transform: scale(0.93);
+    transition-duration: 0.1s;
+}
+
+[data-perf="on"] .opt-btn.active {
+    animation: optActivate var(--duration-normal) var(--ease-spring);
+    box-shadow: var(--opt-btn-active-shadow);
+}
+
+@keyframes optActivate {
+    0% { transform: scale(0.88); }
+    50% { transform: scale(1.06); }
+    75% { transform: scale(0.98); }
+    100% { transform: scale(1); }
+}
+
+/* 精致模式 - 状态栏 */
+[data-perf="on"] #status-bar {
+    transition: background 0.5s ease, border-color 0.5s ease, box-shadow var(--duration-normal) var(--ease-smooth), border-radius 0.3s ease, padding 0.3s ease;
+    box-shadow: var(--status-glow-enhanced), 0 0 0 0.5px var(--border-color);
+}
+
+/* 精致模式 - 棋子指示器 3D */
+[data-perf="on"] .piece {
+    box-shadow:
+        1px 2px 6px rgba(0,0,0,0.4),
+        0 0 0 0.5px rgba(255,255,255,0.05);
+}
+
+[data-perf="on"] .piece.black {
+    background: radial-gradient(circle at 35% 30%, #666 0%, #222 40%, #0a0a0a 100%);
+    box-shadow:
+        1px 2px 6px rgba(0,0,0,0.6),
+        inset 0 1px 2px rgba(255,255,255,0.15),
+        0 0 0 0.5px rgba(255,255,255,0.08);
+}
+
+[data-perf="on"] .piece.white {
+    background: radial-gradient(circle at 35% 30%, #fff 0%, #eee 40%, #bbb 100%);
+    box-shadow:
+        1px 2px 6px rgba(0,0,0,0.25),
+        inset 0 -1px 2px rgba(0,0,0,0.08),
+        0 0 0 0.5px rgba(0,0,0,0.06);
+}
+
+/* 精致模式 - 信息芯片 */
+[data-perf="on"] .info-chip {
+    transition: transform var(--duration-normal) var(--ease-smooth), box-shadow var(--duration-normal) var(--ease-smooth);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* 精致模式 - 分数 */
+[data-perf="on"] .score-pop {
+    animation: scorePopRefined 0.45s var(--ease-spring);
+}
+
+@keyframes scorePopRefined {
+    0% { transform: scale(0.7); opacity: 0.3; }
+    35% { transform: scale(1.35); }
+    65% { transform: scale(0.95); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* 精致模式 - 棋子弹跳 */
+[data-perf="on"] .piece-bounce {
+    animation: pieceBounceRefined 0.4s var(--ease-spring);
+}
+
+@keyframes pieceBounceRefined {
+    0% { transform: scale(0.2); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    70% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+}
+
+/* 精致模式 - 胜利弹窗 */
+[data-perf="on"] #win-overlay {
+    transition: opacity var(--duration-slow) var(--ease-out-expo);
+}
+
+[data-perf="on"] #win-overlay.show {
+    animation: winOverlayIn var(--duration-slower) var(--ease-out-expo);
+}
+
+@keyframes winOverlayIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+[data-perf="on"] #win-content {
+    animation: winContentIn var(--duration-slow) var(--ease-spring);
+}
+
+@keyframes winContentIn {
+    0% { opacity: 0; transform: scale(0.8) translateY(30px); }
+    60% { transform: scale(1.03) translateY(-3px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* 精致模式 - 胜利图标增强 */
+[data-perf="on"] #win-icon {
+    animation: winIconPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes winIconPulse {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-6px) scale(1.05); }
+}
+
+/* 精致模式 - 胜利文字 */
+[data-perf="on"] #win-text {
+    text-shadow: 0 2px 12px var(--accent-shadow);
+}
+
+/* 精致模式 - AI 思考提示 */
+[data-perf="on"] #thinking {
+    transition: transform var(--duration-normal) var(--ease-smooth), opacity var(--duration-normal) var(--ease-smooth);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 0 0 0.5px var(--border-color);
+}
+
+/* 精致模式 - 设置面板 */
+[data-perf="on"] #settings-mask {
+}
+
+[data-perf="on"] #settings-content {
+    box-shadow: var(--settings-card-shadow), 0 0 0 0.5px var(--border-color);
+    animation: settingsCardIn var(--duration-slow) var(--ease-spring);
+}
+
+@keyframes settingsCardIn {
+    0% { opacity: 0; transform: scale(0.88) translateY(40px); }
+    60% { transform: scale(1.02) translateY(-2px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+[data-perf="on"] .setting-item {
+    transition: transform var(--duration-normal) var(--ease-smooth), background-color var(--duration-fast) ease;
+    padding: 2px 0;
+    border-radius: 8px;
+}
+
+[data-perf="on"] .setting-item:hover {
+    transform: translateX(3px);
+    background: var(--opt-btn-bg);
+}
+
+/* 精致模式 - 设置标题 */
+[data-perf="on"] .settings-header h3 {
+    text-shadow: 0 1px 8px var(--accent-shadow);
+}
+
+/* 精致模式 - 记忆面板 */
+[data-perf="on"] #memory-panel {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+[data-perf="on"] .memory-bar {
+    height: 5px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+[data-perf="on"] .memory-bar-segment {
+    transition: width 0.6s var(--ease-out-expo);
+}
+
+/* 精致模式 - spinner 增强 */
+[data-perf="on"] .spinner {
+    animation: spin 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    border-top-color: var(--accent);
+}
+
+/* 精致模式 - 棋盘容器 */
+[data-perf="on"] #board-container {
+    transition: box-shadow var(--duration-slow) var(--ease-smooth);
+}
+
+/* 精致模式 - 图标按钮 */
+[data-perf="on"] .icon-btn {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 0 0 0.5px var(--border-btn);
+    transition: transform var(--duration-normal) var(--ease-spring), box-shadow var(--duration-normal) var(--ease-spring);
+}
+
+[data-perf="on"] .icon-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18), 0 0 0 0.5px var(--border-btn);
+}
+
+[data-perf="on"] .icon-btn:active {
+    transform: scale(0.9);
+    transition-duration: 0.08s;
+}
+
+/* 精致模式 - 徽章 */
+[data-perf="on"] #mode-badge,
+[data-perf="on"] #auto-badge {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* 精致模式 - 标题增强 */
+[data-perf="on"] .header-left h1 {
+    letter-spacing: 0.5px;
+}
+
+/* 精致模式 - 分数点 */
+[data-perf="on"] .score-dot {
+    box-shadow: 0 0 4px currentColor;
+    transition: transform var(--duration-normal) var(--ease-spring), box-shadow var(--duration-normal) var(--ease-spring);
+}
+
+[data-perf="on"] .score-item strong {
+    transition: transform var(--duration-normal) var(--ease-spring), color 0.3s ease;
+}
+
+/* 精致模式 - 应用设置按钮 */
+[data-perf="on"] #btn-apply-settings {
+    box-shadow: var(--btn-primary-shadow);
+    transition: transform var(--duration-normal) var(--ease-spring), box-shadow var(--duration-normal) var(--ease-spring);
+}
+
+[data-perf="on"] #btn-apply-settings:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px var(--accent-shadow);
+}
+
+[data-perf="on"] #btn-apply-settings:active {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.1s;
+}
+
+[data-perf="on"] .header-right {
+    gap: 8px;
+}
+
+/* 精致模式 - 设置项分隔线 */
+[data-perf="on"] .setting-item + .setting-item {
+    border-top: 1px solid rgba(128, 128, 128, 0.08);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+/* 精致模式 - 设置提示文字 */
+[data-perf="on"] .setting-hint {
+    opacity: 0.5;
+    font-size: 0.7rem;
+    letter-spacing: 0.3px;
+    transition: opacity var(--duration-normal) var(--ease-smooth);
+}
+
+[data-perf="on"] .setting-item:hover .setting-hint {
+    opacity: 0.7;
+}
+
+/* 精致模式 - 选项组 */
+[data-perf="on"] .opt-group {
+    gap: var(--opt-group-gap);
+}
+
+[data-perf="on"] .opt-btn {
+    border-radius: var(--opt-radius);
+    padding: var(--opt-padding);
+    font-weight: var(--opt-btn-weight);
+    letter-spacing: 0.3px;
+    transition: transform var(--duration-normal) var(--ease-smooth), box-shadow var(--duration-normal) var(--ease-smooth), background-color var(--duration-fast) ease;
+}
+
+/* 精致模式 - 胜利弹窗内容 */
+[data-perf="on"] #win-content {
+    border-radius: var(--win-radius);
+    padding: var(--win-content-padding);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 0.5px var(--border-color);
+}
+
+/* 精致模式 - 胜利详情文字 */
+[data-perf="on"] #win-detail {
+    opacity: 0.7;
+    letter-spacing: 0.5px;
+}
+
+/* 精致模式 - 棋盘外发光 */
+[data-perf="on"] #board-container {
+    transition: box-shadow var(--duration-slow) var(--ease-smooth);
+    border-radius: var(--board-radius);
+}
+
+/* 精致模式 - 记忆面板统计 */
+[data-perf="on"] .memory-stats {
+    gap: 12px;
+}
+
+[data-perf="on"] .memory-stat {
+    transition: transform var(--duration-normal) var(--ease-smooth);
+}
+
+[data-perf="on"] .memory-stat strong {
+    transition: transform var(--duration-normal) var(--ease-spring);
+}
+
+/* 精致模式 - 记忆面板标题 */
+[data-perf="on"] .memory-title {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* 精致模式 - 滚动条美化 */
+[data-perf="on"] #settings-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+[data-perf="on"] #settings-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+[data-perf="on"] #settings-content::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 4px;
+}
+
+[data-perf="on"] #settings-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(128, 128, 128, 0.35);
+}
+
+/* 精致模式 - 禁用按钮 */
+[data-perf="on"] .btn.disabled {
+    opacity: 0.35;
+}
+
+/* 精致模式 - 控制区域 */
+[data-perf="on"] #controls {
+    gap: var(--controls-gap);
+    padding: var(--controls-padding);
+}
+
+/* 精致模式 - 状态栏棋子信息 */
+[data-perf="on"] .status-info {
+    gap: 6px;
+}
+
+[data-perf="on"] .status-info .piece {
+    transition: transform var(--duration-normal) var(--ease-spring), background 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* 精致模式 - AI 对战暂停按钮 */
+[data-perf="on"] #btn-battle-pause {
+    transition: transform var(--duration-normal) var(--ease-spring);
+}
+
+[data-perf="on"] #btn-battle-pause:active {
+    transform: scale(0.92);
+    transition-duration: 0.08s;
+}
+
+/* 灵动岛响应式 */
+@media (max-height: 680px) {
+    .island-expanded { width: 220px; padding: 12px; border-radius: 18px; }
+    .island-cover { width: 36px; height: 36px; border-radius: 10px; }
+    .ctrl-play { width: 36px; height: 36px; }
+    .ctrl-btn { width: 30px; height: 30px; }
+    [data-perf="on"] .island-expanded { width: 228px; padding: 14px; border-radius: 20px; }
+    [data-perf="on"] .island-cover { width: 40px; height: 40px; border-radius: 12px; }
+    [data-perf="on"] .ctrl-play { width: 40px; height: 40px; }
+    [data-perf="on"] .ctrl-btn { width: 32px; height: 32px; }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    .island-expanded { width: 200px; padding: 10px; border-radius: 16px; }
+    .island-song-wrap { margin-bottom: 8px; }
+    .island-progress { margin-bottom: 8px; }
+    [data-perf="on"] .island-expanded { width: 210px; padding: 12px; border-radius: 18px; }
+}
+
+/* ========== 响应式 ========== */
+@media (max-height: 680px) {
+    .header-left h1 { font-size: 1.1rem; }
+    #status-bar { padding: 5px 10px; margin: 3px 0; }
+    #controls { padding: 6px 0; }
+    .btn { padding: 8px 14px; font-size: 0.85rem; }
+    .info-chip { display: none; }
+    #thinking { bottom: 55px; }
+    #memory-panel { padding: 6px 10px; margin-bottom: 3px; }
+    .memory-stats { gap: 8px; }
+}
+@media (min-width: 500px) {
+    #app { padding: 16px 20px; }
+    .header-left h1 { font-size: 1.6rem; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+    #app { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 4px 8px; max-width: 100%; }
+    #header { width: 100%; padding: 2px 0; }
+    .header-left h1 { font-size: 1rem; }
+    #status-bar { width: auto; margin: 0 8px; }
+    .info-chip { display: none; }
+    #board-container { flex: 0 1 auto; max-height: 85vh; }
+    #controls { width: auto; flex-direction: column; padding: 4px; }
+    #thinking { bottom: 10px; }
+    #memory-panel { display: none; }
+}
+
+/* ========== UI 打磨增强 ========== */
+
+/* 按钮涟漪追踪效果 */
+.btn-primary, .btn-secondary, .opt-btn {
+    position: relative;
+    overflow: hidden;
+}
+.btn-primary::after, .btn-secondary::after, .opt-btn::after {
+    content: '';
+    position: absolute;
+    width: 0; height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    left: var(--ripple-x, 50%);
+    top: var(--ripple-y, 50%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+.btn-primary.ripple::after, .btn-secondary.ripple::after, .opt-btn.ripple::after {
+    width: 250px; height: 250px;
+    opacity: 0;
+    transition: width 0.5s ease-out, height 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+/* 思考指示器三点跳动 */
+.thinking-dots {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+.thinking-dots span {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    animation: thinkingDotBounce 1.4s ease-in-out infinite;
+}
+.thinking-dots span:nth-child(2) { animation-delay: 0.16s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.32s; }
+@keyframes thinkingDotBounce {
+    0%, 80%, 100% { opacity: 0.3; transform: translateY(0) scale(0.8); }
+    40% { opacity: 1; transform: translateY(-6px) scale(1.1); }
+}
+
+/* 主题切换过渡增强 */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+    transition: background-color 0.6s ease, color 0.4s ease,
+                border-color 0.5s ease, box-shadow 0.5s ease !important;
+}
+
+/* 棋盘容器呼吸效果（使用transform和opacity，性能优化） */
+#board-container {
+    animation: boardBreath 5s ease-in-out infinite;
+}
+@keyframes boardBreath {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.002); opacity: 0.98; }
+}
+
+/* 胜利遮罩入场增强 */
+#win-overlay:not(.hidden) {
+    animation: winOverlayIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes winOverlayIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* 分数数字弹跳增强 */
+.score-num.pop {
+    animation: scoreNumPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes scoreNumPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+/* 状态文字过渡增强 */
+#status-text {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+#status-text.fade-out {
+    opacity: 0;
+    transform: translateY(-4px);
+}
+#status-text.fade-in {
+    opacity: 0;
+    transform: translateY(4px);
+    animation: statusFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes statusFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 棋盘光标 */
+#board-canvas { cursor: crosshair; }
+#board-canvas.disabled { cursor: not-allowed; }

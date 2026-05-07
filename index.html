@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark" data-perf="off">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>AI 五子棋</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="splash.css">
+    <link rel="stylesheet" href="island-animation.css">
+</head>
+<body>
+    <!-- 启动画面 -->
+    <div id="splash-screen" role="alert" aria-label="加载中">
+        <div id="splash-stage"></div>
+        <div id="splash-title">AI 五子棋</div>
+    </div>
+
+    <div id="app">
+        <header id="header">
+            <div class="header-left">
+                <h1>AI 五子棋</h1>
+            </div>
+            <div class="header-center">
+                <div id="music-island" class="music-island">
+                    <div class="island-pill" id="island-pill">
+                        <svg class="island-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                            <defs>
+                                <linearGradient id="music-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="currentColor" stop-opacity="0.9"/>
+                                    <stop offset="100%" stop-color="currentColor" stop-opacity="0.6"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" fill="url(#music-grad)"/>
+                            <circle cx="10" cy="17" r="1.2" fill="currentColor" opacity="0.7"/>
+                        </svg>
+                    </div>
+                    <div class="island-expanded" id="island-expanded">
+                        <div class="island-top">
+                            <div class="island-dots">
+                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                            </div>
+                        </div>
+                        <div class="island-song-wrap">
+                            <div class="island-cover">
+                                <svg class="cover-note" viewBox="0 0 24 24" width="20" height="20" fill="rgba(255,255,255,0.7)">
+                                    <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/>
+                                    <circle cx="10" cy="17" r="1.5" fill="rgba(255,255,255,0.5)"/>
+                                </svg>
+                            </div>
+                            <div class="island-meta">
+                                <span class="island-song" id="island-song">点击播放</span>
+                                <span class="island-artist" id="island-artist">网络音乐</span>
+                            </div>
+                        </div>
+                        <div class="island-progress">
+                            <div class="progress-track" id="music-progress">
+                                <div class="progress-fill" id="music-progress-fill"></div>
+                            </div>
+                            <div class="progress-time">
+                                <span id="music-current-time">0:00</span>
+                                <span id="music-total-time">0:00</span>
+                            </div>
+                        </div>
+                        <div class="island-controls">
+                            <button class="ctrl-btn" id="music-prev" aria-label="上一首">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" opacity="0.9"/>
+                                    <rect x="5" y="5" width="3" height="14" rx="1" fill="currentColor"/>
+                                    <path d="M10 5.5l9 6.5-9 6.5z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                            <button class="ctrl-btn ctrl-play" id="music-play" aria-label="播放">
+                                <svg id="icon-play" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                                    <path d="M8 4.5v15l12-7.5z" opacity="0.95"/>
+                                    <path d="M7 4.2a1 1 0 0 1 1.5-.8l12 7.5a1 1 0 0 1 0 1.7l-12 7.5A1 1 0 0 1 7 19.3V4.2z" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+                                </svg>
+                                <svg id="icon-pause" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" style="display:none">
+                                    <rect x="5.5" y="4" width="4" height="16" rx="1.2" opacity="0.95"/>
+                                    <rect x="14.5" y="4" width="4" height="16" rx="1.2" opacity="0.95"/>
+                                </svg>
+                            </button>
+                            <button class="ctrl-btn" id="music-next" aria-label="下一首">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" opacity="0.9"/>
+                                    <path d="M5 5.5l9 6.5-9 6.5z" fill="currentColor"/>
+                                    <rect x="16" y="5" width="3" height="14" rx="1" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button id="btn-theme" class="icon-btn" title="切换主题" aria-label="切换深浅主题">
+                    <span id="theme-icon" class="icon-wrap">
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    </span>
+                </button>
+            </div>
+        </header>
+
+        <div id="status-bar">
+            <div id="player-indicator">
+                <span id="current-piece" class="piece black"></span>
+                <span id="mode-badge">AI 对决</span>
+                <span id="auto-badge">自动</span>
+                <span id="status-text">你的回合</span>
+            </div>
+            <div id="move-count" class="info-chip">
+                第 <strong id="move-num">0</strong> 手
+            </div>
+            <div id="score-board">
+                <span class="score-item score-player"><span class="score-dot"></span><span id="score-label-player" class="score-label">你</span><strong id="player-wins">0</strong></span>
+                <span class="score-divider">·</span>
+                <span class="score-item score-ai"><span class="score-dot"></span><span id="score-label-ai" class="score-label">AI</span><strong id="ai-wins">0</strong></span>
+                <span class="score-divider">·</span>
+                <span class="score-item score-draw"><span class="score-dot"></span><span id="score-label-draw" class="score-label">平</span><strong id="draws">0</strong></span>
+            </div>
+        </div>
+
+        <!-- 记忆面板（AI 对决模式显示） -->
+        <div id="memory-panel" class="hidden">
+            <div class="memory-header">
+                <span class="memory-title"><span id="memory-icon" class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 1 5 5c0 1.1-.4 2.1-1 2.9.6.8 1 1.8 1 2.9a5 5 0 0 1-10 0c0-1.1.4-2.1 1-2.9A5 5 0 0 1 12 2z"/><path d="M12 2v20"/><path d="M7 7h10"/><path d="M7 12h10"/></svg></span> AI 记忆</span>
+                <span id="memory-total" class="memory-stat" style="font-size:0.68rem;color:var(--text-muted)"></span>
+            </div>
+            <div class="memory-stats">
+                <span class="memory-stat"><span class="stat-dot black"></span>⚫ <strong id="mem-black-wins">0</strong></span>
+                <span class="memory-stat"><span class="stat-dot white"></span>⚪ <strong id="mem-white-wins">0</strong></span>
+                <span class="memory-stat"><span class="stat-dot draw"></span>平 <strong id="mem-draws">0</strong></span>
+                <span class="memory-stat">均 <strong id="mem-avg-moves">0</strong> 手</span>
+            </div>
+            <div class="memory-bar">
+                <div id="mem-bar-black" class="memory-bar-segment black" style="width:33%"></div>
+                <div id="mem-bar-draw" class="memory-bar-segment draw" style="width:34%"></div>
+                <div id="mem-bar-white" class="memory-bar-segment white" style="width:33%"></div>
+            </div>
+            <div class="memory-footer">
+                <button id="btn-clear-memory" class="memory-clear-btn">清除记忆</button>
+            </div>
+        </div>
+
+        <div id="board-container">
+            <canvas id="board-canvas"></canvas>
+            <div id="win-overlay" class="hidden">
+                <div id="win-content">
+                    <div id="win-icon" class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
+                    <h2 id="win-text">你赢了！</h2>
+                    <p id="win-detail"></p>
+                    <button id="btn-play-again" class="btn btn-primary">再来一局</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="controls">
+            <button id="btn-undo" class="btn btn-secondary">
+                <span id="btn-icon-undo" class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h13a4 4 0 0 1 0 8H9"/><polyline points="7 14 3 10 7 6"/></svg></span><span>悔棋</span>
+            </button>
+            <button id="btn-battle-pause" class="btn btn-secondary hidden">
+                <span id="btn-icon-pause" class="icon-wrap"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="5.5" y="4" width="4.5" height="16" rx="1.2"/><rect x="14" y="4" width="4.5" height="16" rx="1.2"/></svg></span><span id="battle-pause-text">暂停</span>
+            </button>
+            <button id="btn-restart" class="btn btn-primary">
+                <span id="btn-icon-restart" class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></span><span>新局</span>
+            </button>
+            <button id="btn-settings" class="btn btn-secondary">
+                <span id="btn-icon-settings" class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span>设置</span>
+            </button>
+        </div>
+
+        <!-- 设置面板 -->
+        <div id="settings-panel" class="hidden" role="dialog" aria-modal="true" aria-label="游戏设置">
+            <div id="settings-mask" aria-hidden="true"></div>
+            <div id="settings-content">
+                <div class="settings-header">
+                    <h3>游戏设置</h3>
+                    <button id="btn-close-settings" class="icon-btn" aria-label="关闭设置"><span class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></button>
+                </div>
+                <div class="setting-item">
+                    <label>游戏模式</label>
+                    <div id="mode-selector" class="opt-group">
+                        <button class="opt-btn active" data-mode="pve" aria-pressed="true">人机对战</button>
+                        <button class="opt-btn" data-mode="battle" aria-pressed="false">AI 对决</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>AI 难度</label>
+                    <div id="difficulty-selector" class="opt-group">
+                        <button class="opt-btn" data-level="1" aria-pressed="false">简单</button>
+                        <button class="opt-btn active" data-level="2" aria-pressed="true">中等</button>
+                        <button class="opt-btn" data-level="3" aria-pressed="false">困难</button>
+                    </div>
+                </div>
+                <div id="pve-settings">
+                    <div class="setting-item">
+                        <label>先手选择</label>
+                        <div id="first-selector" class="opt-group">
+                            <button class="opt-btn active" data-first="player" aria-pressed="true">玩家先手</button>
+                            <button class="opt-btn" data-first="ai" aria-pressed="false">AI 先手</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>AI 记忆</label>
+                        <div id="pve-memory-selector" class="opt-group">
+                            <button class="opt-btn active" data-memory="on" aria-pressed="true">开启</button>
+                            <button class="opt-btn" data-memory="off" aria-pressed="false">关闭</button>
+                        </div>
+                        <small class="setting-hint">AI 将记住历史对局，优化下棋策略</small>
+                    </div>
+                    <div class="setting-item">
+                        <label class="label-danger">⚡ 极限模式</label>
+                        <div id="extreme-selector" class="opt-group">
+                            <button class="opt-btn" data-extreme="on" aria-pressed="false">开启</button>
+                            <button class="opt-btn active" data-extreme="off" aria-pressed="true">关闭</button>
+                        </div>
+                        <small class="setting-hint hint-danger">6个AI同时运算 · 攻势95% · 深度搜索 · 记忆预测</small>
+                    </div>
+                </div>
+                <div id="battle-settings" class="hidden">
+                    <div class="setting-item">
+                        <label>先手选择</label>
+                        <div id="battle-first-selector" class="opt-group">
+                            <button class="opt-btn active" data-bfirst="black" aria-pressed="true">⚫ 黑棋先手</button>
+                            <button class="opt-btn" data-bfirst="white" aria-pressed="false">⚪ 白棋先手</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>对弈速度</label>
+                        <div id="speed-selector" class="opt-group">
+                            <button class="opt-btn" data-speed="200" aria-pressed="false">极速</button>
+                            <button class="opt-btn active" data-speed="500" aria-pressed="true">正常</button>
+                            <button class="opt-btn" data-speed="1000" aria-pressed="false">慢速</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>自动连续对弈</label>
+                        <div id="auto-selector" class="opt-group">
+                            <button class="opt-btn" data-auto="on" aria-pressed="false">开启</button>
+                            <button class="opt-btn active" data-auto="off" aria-pressed="true">关闭</button>
+                        </div>
+                        <small class="setting-hint">开启后，每局结束将自动开始下一局</small>
+                    </div>
+                    <div class="setting-item">
+                        <label>AI 记忆</label>
+                        <div id="memory-selector" class="opt-group">
+                            <button class="opt-btn active" data-memory="on" aria-pressed="true">开启</button>
+                            <button class="opt-btn" data-memory="off" aria-pressed="false">关闭</button>
+                        </div>
+                        <small class="setting-hint">AI 将记住历史对局，优化下棋策略</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>棋盘大小</label>
+                    <div id="size-selector" class="opt-group">
+                        <button class="opt-btn" data-size="13" aria-pressed="false">13×13</button>
+                        <button class="opt-btn active" data-size="15" aria-pressed="true">15×15</button>
+                        <button class="opt-btn" data-size="19" aria-pressed="false">19×19</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>音效</label>
+                    <div id="sound-selector" class="opt-group">
+                        <button class="opt-btn active" data-sound="on" aria-pressed="true">开启</button>
+                        <button class="opt-btn" data-sound="off" aria-pressed="false">关闭</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>开屏动画</label>
+                    <div id="splash-selector" class="opt-group">
+                        <button class="opt-btn active" data-splash="on" aria-pressed="true">开启</button>
+                        <button class="opt-btn" data-splash="off" aria-pressed="false">关闭</button>
+                    </div>
+                    <button id="btn-preview-all" class="btn-preview-all" type="button" aria-label="预览全部30个开屏动画">▶ 预览全部动画</button>
+                    <small class="setting-hint">开启：每次启动随机播放 30 种粒子动画 | 关闭：跳过启动画面 | 预览：依次播放全部 30 个动画</small>
+                </div>
+                <div class="setting-item">
+                    <label>渲染模式</label>
+                    <div id="perf-selector" class="opt-group">
+                        <button class="opt-btn active" data-perf="off" aria-pressed="true">标准</button>
+                        <button class="opt-btn" data-perf="on" aria-pressed="false">精致</button>
+                    </div>
+                    <small class="setting-hint">精致模式：3D 立体棋子 + 光泽高光 + 落子动画 + 木纹棋盘 + 坐标标注</small>
+                </div>
+                <div class="setting-item" id="island-style-item" style="display:none">
+                    <label>灵动岛风格</label>
+                    <div id="island-style-selector" class="opt-group">
+                        <button class="opt-btn active" data-style="luxury" aria-pressed="true">经典奢华</button>
+                        <button class="opt-btn" data-style="minimal" aria-pressed="false">现代简约</button>
+                        <button class="opt-btn" data-style="glassmorphism" aria-pressed="false">毛玻璃拟态</button>
+                    </div>
+                    <small class="setting-hint">奢华：金色边框 · 柔和光晕 | 简约：无模糊 · 极简线条 | 毛玻璃：强模糊 · 渐变色彩</small>
+                </div>
+                <div class="setting-item">
+                    <label>灵动岛毛玻璃</label>
+                    <div id="glass-selector" class="opt-group">
+                        <button class="opt-btn active" data-glass="on" aria-pressed="true">开启</button>
+                        <button class="opt-btn" data-glass="off" aria-pressed="false">关闭</button>
+                    </div>
+                    <small class="setting-hint">开启：朦胧半透明毛玻璃效果 | 关闭：更不透明纯色背景，提升低端设备性能</small>
+                </div>
+                <button id="btn-apply-settings" class="btn btn-primary btn-full-width">
+                    应用设置
+                </button>
+            </div>
+        </div>
+
+        <div id="thinking" class="hidden">
+            <div class="spinner"></div>
+            <span>AI 思考中...</span>
+        </div>
+    </div>
+
+    <script src="splash.js"></script>
+    <script>Splash.init();</script>
+    <script src="ai-utils.js"></script>
+    <script src="ai.js"></script>
+    <script src="ai-pattern.js"></script>
+    <script src="ai-strategy.js"></script>
+    <script src="ai-tactics.js"></script>
+    <script src="ai-extreme.js"></script>
+    <script src="ai-ultimate.js"></script>
+    <script src="ai-mcts.js"></script>
+    <script src="ai-vcf.js"></script>
+    <script src="ai-search.js"></script>
+    <script src="ai-opening.js"></script>
+    <script src="ai-manager.js"></script>
+    <script src="memory.js"></script>
+    <script src="ai-battle.js"></script>
+    <script src="refined-render.js"></script>
+    <script src="refined-ui.js"></script>
+    <script src="music-island.js?v=261"></script>
+    <script src="island-animation.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

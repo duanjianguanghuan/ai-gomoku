@@ -1,0 +1,168 @@
+/**
+ * 启动动画样式 v3
+ * Canvas 粒子渲染 · 深浅主题适配 · 精致模式增强 · 120Hz 优化
+ */
+
+/* ========== 启动画面容器 ========== */
+#splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #ffffff;
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    will-change: opacity, transform;
+}
+
+#splash-screen.fade-out {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+}
+
+/* 启动画面舞台 - Canvas 容器 */
+#splash-stage {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    will-change: transform;
+}
+
+/* 启动画面标题 */
+#splash-title {
+    position: absolute;
+    bottom: 18%;
+    left: 50%;
+    transform: translateX(-50%) translateZ(0);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 4px;
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    text-shadow: 0 2px 12px var(--accent-shadow, rgba(245, 175, 25, 0.3));
+    white-space: nowrap;
+    pointer-events: none;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+#splash-title.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+/* ========== 深浅主题适配 ========== */
+[data-theme="dark"] #splash-title {
+    color: var(--text-primary);
+    text-shadow: 0 2px 16px var(--accent-shadow, rgba(245, 175, 25, 0.3));
+}
+
+[data-theme="light"] #splash-title {
+    color: var(--text-primary);
+    text-shadow: 0 2px 12px var(--accent-shadow, rgba(245, 175, 25, 0.3));
+}
+
+/* ========== 预览覆盖层 ========== */
+#splash-preview-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #ffffff;
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    will-change: opacity, transform;
+}
+
+#splash-preview-overlay.fade-out {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+}
+
+/* ========== 预览 UI 元素 ========== */
+.splash-progress {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 3px;
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.splash-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--accent, #e85d04);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.splash-counter {
+    position: absolute;
+    bottom: 16%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--text-secondary, #666);
+    opacity: 0.7;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.splash-skip-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    color: var(--text-secondary, #666);
+    background: rgba(128, 128, 128, 0.15);
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.2s ease;
+}
+
+.splash-skip-btn:hover {
+    opacity: 0.7;
+}
+
+/* ========== 精致模式增强 ========== */
+[data-perf="on"] #splash-screen {
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-perf="on"] #splash-screen.fade-out {
+    transform: scale(1.06);
+}
+
+[data-perf="on"] #splash-title {
+    font-size: 1.5rem;
+    letter-spacing: 5px;
+    font-weight: 800;
+}
+
+/* ========== 无障碍 ========== */
+@media (prefers-reduced-motion: reduce) {
+    #splash-screen { transition-duration: 0.01ms !important; }
+    #splash-title { transition-duration: 0.01ms !important; }
+}
