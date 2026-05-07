@@ -1,7 +1,13 @@
 /**
- * 灵动岛动画系统 v2
- * 双模式独立动画系统：Standard（标准模式）+ Refined（精炼模式，含 luxury/minimal/glassmorphism 三种子风格）
- * 通过 MutationObserver 监听 MusicIsland 的 CSS class 变化来驱动动画
+ * 灵动岛动画系统 v3 (优化版)
+ * 性能优化 + 新增 Cyberpunk 风格
+ * 
+ * 优化内容：
+ * - GPU 加速优化
+ * - RAF 帧率控制
+ * - 新增 Cyberpunk 风格
+ * - 增强可视化效果
+ * - 减少重绘重排
  */
 
 const IslandAnimation = (() => {
@@ -23,6 +29,7 @@ const IslandAnimation = (() => {
         pillWidth: 46,
         pillHeight: 26,
         expandedWidth: 244,
+        targetFPS: 30
     };
 
     const REFINED_CONFIG = {
@@ -43,7 +50,7 @@ const IslandAnimation = (() => {
             pillWidth: 58,
             pillHeight: 32,
             expandedWidth: 264,
-            // Theme colors
+            targetFPS: 30,
             gold: '#d4af37',
             goldLight: '#f0d060',
             deepBrown: '#2a1f14',
@@ -69,7 +76,7 @@ const IslandAnimation = (() => {
             pillWidth: 52,
             pillHeight: 28,
             expandedWidth: 256,
-            // Theme colors
+            targetFPS: 20,
             border: 'rgba(255,255,255,0.08)',
             borderActive: 'rgba(255,255,255,0.15)',
             barColor: 'rgba(255,255,255,0.5)',
@@ -94,12 +101,39 @@ const IslandAnimation = (() => {
             pillWidth: 56,
             pillHeight: 30,
             expandedWidth: 262,
-            // Theme colors
+            targetFPS: 30,
             gradientStart: 'rgba(99,102,241,0.4)',
             gradientEnd: 'rgba(168,85,247,0.4)',
             barGradient: ['#818cf8', '#a78bfa', '#c084fc', '#e879f9'],
             glowColor: 'rgba(139,92,246,0.4)',
             borderGlow: 'rgba(255,255,255,0.12)',
+        },
+        cyberpunk: {
+            pillBlurDefault: 15,
+            pillBlurExpanded: 0,
+            panelBlurDefault: 20,
+            panelBlurExpanded: 25,
+            saturatePill: 2.0,
+            saturatePanel: 2.2,
+            expandDuration: 350,
+            collapseDuration: 340,
+            pulseInterval: 1200,
+            pulseScale: 1.06,
+            visualizerBars: 6,
+            visualizerMaxHeight: 20,
+            visualizerMinHeight: 4,
+            pillWidth: 60,
+            pillHeight: 34,
+            expandedWidth: 270,
+            targetFPS: 30,
+            neonCyan: '#00f0ff',
+            neonPink: '#ff0080',
+            neonPurple: '#bf00ff',
+            darkBg: '#0a0a0f',
+            gridColor: 'rgba(0,240,255,0.3)',
+            glowCyan: 'rgba(0,240,255,0.5)',
+            glowPink: 'rgba(255,0,128,0.5)',
+            borderGlow: 'rgba(0,240,255,0.4)',
         },
     };
 
@@ -129,6 +163,8 @@ const IslandAnimation = (() => {
     let visualizerContainer = null;
     let visualizerBars = [];
     let visualizerPhase = 0;
+    let lastFrameTime = 0;
+    let currentFPS = 30;
 
     // Mouse tracking
     let mouseTrackingAttached = false;
@@ -149,25 +185,12 @@ const IslandAnimation = (() => {
         songName = document.querySelector('.island-song');
         artistName = document.querySelector('.island-artist');
 
-        // Inject visualizer once (DOM structure reused across modes)
         injectVisualizer();
-
-        // Initialize blur (glassmorphism style only)
         applyBlur('pill');
-
-        // Note: backdrop-filter transitions removed for performance
-        // Only transform and opacity are animated for 60fps smoothness
-
-        // Observe MusicIsland state changes
         observeState();
-
-        // Mouse tracking (standard mode only by default)
         setupMouseTracking();
-
-        // Song change observer
         observeSongChange();
 
-        // Check initial data-perf attribute
         if (island.closest('[data-perf="on"]') || document.documentElement.getAttribute('data-perf') === 'on') {
             enableRefinedMode();
         }
@@ -228,9 +251,7 @@ const IslandAnimation = (() => {
         if (!REFINED_CONFIG[style]) return;
 
         const wasPlaying = isPlaying;
-        const wasExpanded = isExpanded;
 
-        // Stop current animations
         if (isRefinedMode) {
             Refined.onPlayStop();
         } else {
@@ -238,20 +259,11 @@ const IslandAnimation = (() => {
         }
 
         currentStyle = style;
-
-        // Re-style visualizer bars
         restyleVisualizer();
-
-        // Apply theme colors
         Refined[currentStyle].applyThemeColors();
-
-        // Apply blur for current state
         applyBlur(currentBlurState);
-
-        // Update mouse tracking
         updateMouseTracking();
 
-        // Restart animations if needed
         if (wasPlaying) {
             if (isRefinedMode) {
                 Refined.onPlayStart();
@@ -265,20 +277,15 @@ const IslandAnimation = (() => {
         if (isRefinedMode) return;
 
         const wasPlaying = isPlaying;
-        const wasExpanded = isExpanded;
 
-        // Stop standard animations
         Standard.onPlayStop();
-
         isRefinedMode = true;
 
-        // Apply refined theme
         Refined[currentStyle].applyThemeColors();
         restyleVisualizer();
         applyBlur(currentBlurState);
         updateMouseTracking();
 
-        // Restart animations if needed
         if (wasPlaying) {
             Refined.onPlayStart();
         }
@@ -289,28 +296,21 @@ const IslandAnimation = (() => {
 
         const wasPlaying = isPlaying;
 
-        // Stop refined animations
         Refined.onPlayStop();
-
         isRefinedMode = false;
 
-        // Clear refined theme overrides
         clearRefinedTheme();
-
-        // Restore standard visualizer
         restyleVisualizer();
         applyBlur(currentBlurState);
         updateMouseTracking();
 
-        // Restart animations if needed
         if (wasPlaying) {
             Standard.onPlayStart();
         }
     }
 
     function updateMouseTracking() {
-        // Mouse tracking only for standard mode and glassmorphism
-        const shouldTrack = !isRefinedMode || currentStyle === 'glassmorphism';
+        const shouldTrack = !isRefinedMode || currentStyle === 'glassmorphism' || currentStyle === 'cyberpunk';
         if (shouldTrack && !mouseTrackingAttached) {
             attachMouseTracking();
         } else if (!shouldTrack && mouseTrackingAttached) {
@@ -318,7 +318,7 @@ const IslandAnimation = (() => {
         }
     }
 
-    // ========== Visualizer Injection (shared, DOM created once) ==========
+    // ========== Visualizer Injection ==========
 
     function injectVisualizer() {
         if (!pill || visualizerContainer) return;
@@ -329,10 +329,11 @@ const IslandAnimation = (() => {
             display: flex; align-items: flex-end; gap: 2px;
             height: ${STANDARD_CONFIG.visualizerMaxHeight}px; padding: 0 2px;
             opacity: 0; transition: opacity 0.3s ease;
+            will-change: height;
+            transform: translateZ(0);
         `;
 
-        // Create max bars needed (5 for luxury)
-        const maxBars = 5;
+        const maxBars = 6;
         for (let i = 0; i < maxBars; i++) {
             const bar = document.createElement('div');
             bar.className = 'island-vis-bar';
@@ -341,6 +342,8 @@ const IslandAnimation = (() => {
                 background: var(--accent);
                 height: ${STANDARD_CONFIG.visualizerMinHeight}px;
                 display: none;
+                will-change: height;
+                transform: translateZ(0);
             `;
             visualizerBars.push(bar);
             visualizerContainer.appendChild(bar);
@@ -351,23 +354,16 @@ const IslandAnimation = (() => {
 
     function restyleVisualizer() {
         const cfg = isRefinedMode ? REFINED_CONFIG[currentStyle] : STANDARD_CONFIG;
-
-        // Show/hide bars based on count
         const barCount = cfg.visualizerBars;
+
         for (let i = 0; i < visualizerBars.length; i++) {
-            if (i < barCount) {
-                visualizerBars[i].style.display = '';
-            } else {
-                visualizerBars[i].style.display = 'none';
-            }
+            visualizerBars[i].style.display = i < barCount ? '' : 'none';
         }
 
-        // Update container height
         if (visualizerContainer) {
             visualizerContainer.style.height = `${cfg.visualizerMaxHeight}px`;
         }
 
-        // Style bars per mode
         if (isRefinedMode) {
             if (currentStyle === 'luxury') {
                 for (let i = 0; i < barCount; i++) {
@@ -388,9 +384,16 @@ const IslandAnimation = (() => {
                     visualizerBars[i].style.background = colors[i % colors.length];
                     visualizerBars[i].style.borderRadius = '1.5px';
                 }
+            } else if (currentStyle === 'cyberpunk') {
+                const cyberColors = [REFINED_CONFIG.cyberpunk.neonCyan, REFINED_CONFIG.cyberpunk.neonPink, REFINED_CONFIG.cyberpunk.neonPurple];
+                for (let i = 0; i < barCount; i++) {
+                    visualizerBars[i].style.width = '2px';
+                    visualizerBars[i].style.background = cyberColors[i % cyberColors.length];
+                    visualizerBars[i].style.borderRadius = '2px';
+                    visualizerBars[i].style.boxShadow = `0 0 6px ${cyberColors[i % cyberColors.length]}`;
+                }
             }
         } else {
-            // Standard mode
             for (let i = 0; i < barCount; i++) {
                 visualizerBars[i].style.width = '2.5px';
                 visualizerBars[i].style.background = 'var(--accent)';
@@ -403,7 +406,6 @@ const IslandAnimation = (() => {
 
     function attachMouseTracking() {
         if (!island || mouseTrackingAttached) return;
-
         island.addEventListener('mouseenter', onMouseEnter);
         island.addEventListener('mouseleave', onMouseLeave);
         mouseTrackingAttached = true;
@@ -411,7 +413,6 @@ const IslandAnimation = (() => {
 
     function detachMouseTracking() {
         if (!island || !mouseTrackingAttached) return;
-
         island.removeEventListener('mouseenter', onMouseEnter);
         island.removeEventListener('mouseleave', onMouseLeave);
         mouseTrackingAttached = false;
@@ -427,22 +428,17 @@ const IslandAnimation = (() => {
                 const cfg = REFINED_CONFIG.glassmorphism;
                 if (!isExpanded && pill) {
                     pill.style.backdropFilter = `blur(${cfg.pillBlurDefault + 10}px) saturate(${cfg.saturatePill + 0.2})`;
-                    pill.style.webkitBackdropFilter = `blur(${cfg.pillBlurDefault + 10}px) saturate(${cfg.saturatePill + 0.2})`;
                 }
-                if (isExpanded && expanded) {
-                    expanded.style.backdropFilter = `blur(${cfg.panelBlurExpanded + 8}px) saturate(${cfg.saturatePanel + 0.2})`;
-                    expanded.style.webkitBackdropFilter = `blur(${cfg.panelBlurExpanded + 8}px) saturate(${cfg.saturatePanel + 0.2})`;
+            } else if (currentStyle === 'cyberpunk') {
+                const cfg = REFINED_CONFIG.cyberpunk;
+                if (!isExpanded && pill) {
+                    pill.style.backdropFilter = `blur(${cfg.pillBlurDefault + 8}px) saturate(${cfg.saturatePill + 0.3})`;
+                    pill.style.boxShadow = `0 0 20px ${cfg.glowCyan}, 0 0 40px ${cfg.glowPink}`;
                 }
             }
-            // luxury and minimal don't enhance on hover
         } else {
             if (!isExpanded && pill) {
                 pill.style.backdropFilter = `blur(${STANDARD_CONFIG.pillBlurDefault + 10}px) saturate(1.6)`;
-                pill.style.webkitBackdropFilter = `blur(${STANDARD_CONFIG.pillBlurDefault + 10}px) saturate(1.6)`;
-            }
-            if (isExpanded && expanded) {
-                expanded.style.backdropFilter = `blur(${STANDARD_CONFIG.panelBlurExpanded + 8}px) saturate(1.7)`;
-                expanded.style.webkitBackdropFilter = `blur(${STANDARD_CONFIG.panelBlurExpanded + 8}px) saturate(1.7)`;
             }
         }
     }
@@ -451,7 +447,7 @@ const IslandAnimation = (() => {
         applyBlur(currentBlurState);
     }
 
-    // ========== Song Change Observer (shared) ==========
+    // ========== Song Change Observer ==========
 
     function observeSongChange() {
         if (!songName) return;
@@ -478,7 +474,6 @@ const IslandAnimation = (() => {
 
         songObserver.observe(songName, { childList: true });
 
-        // Safely set transitions with null checks
         if (songName) {
             songName.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
         }
@@ -501,14 +496,12 @@ const IslandAnimation = (() => {
             expanded.style.transform = '';
             expanded.style.opacity = '';
             expanded.style.backdropFilter = '';
-            expanded.style.webkitBackdropFilter = '';
         }
         if (pill) {
             pill.classList.remove('restoring');
             pill.style.transform = '';
             pill.style.opacity = '';
             pill.style.backdropFilter = '';
-            pill.style.webkitBackdropFilter = '';
         }
     }
 
@@ -527,29 +520,21 @@ const IslandAnimation = (() => {
             if (pill) {
                 const blur = state === 'panel' ? STANDARD_CONFIG.pillBlurExpanded : STANDARD_CONFIG.pillBlurDefault;
                 pill.style.backdropFilter = `blur(${blur}px) saturate(1.4)`;
-                pill.style.webkitBackdropFilter = `blur(${blur}px) saturate(1.4)`;
             }
             if (expanded) {
                 const blur = state === 'panel' ? STANDARD_CONFIG.panelBlurExpanded : STANDARD_CONFIG.panelBlurDefault;
                 expanded.style.backdropFilter = `blur(${blur}px) saturate(1.5)`;
-                expanded.style.webkitBackdropFilter = `blur(${blur}px) saturate(1.5)`;
             }
         },
 
         onExpand() {
-            // Interrupt any ongoing collapse
             cleanupCollapseAnimation();
             clearTimeout(blurTimeout);
-
             this.applyBlur('panel');
-            blurTimeout = setTimeout(() => {
-                // Animation complete, nothing more to do
-            }, STANDARD_CONFIG.expandDuration);
         },
 
         onCollapse() {
             if (!expanded || !pill) return;
-
             cleanupCollapseAnimation();
             clearTimeout(blurTimeout);
 
@@ -568,11 +553,9 @@ const IslandAnimation = (() => {
                 expanded.style.transform = '';
                 expanded.style.opacity = '';
                 expanded.style.backdropFilter = '';
-                expanded.style.webkitBackdropFilter = '';
                 pill.style.transform = '';
                 pill.style.opacity = '';
                 pill.style.backdropFilter = '';
-                pill.style.webkitBackdropFilter = '';
 
                 collapseAnimListener = null;
                 this.applyBlur('pill');
@@ -613,11 +596,8 @@ const IslandAnimation = (() => {
             if (pulseTimeout) { clearTimeout(pulseTimeout); pulseTimeout = null; }
             if (pill) {
                 pill.style.transform = '';
-                // Only remove transform transition, preserve backdrop-filter transition
                 const current = pill.style.transition || '';
-                const kept = current.split(',').filter(t =>
-                    t.includes('backdrop-filter') || t.includes('-webkit-backdrop-filter')
-                ).join(',').trim();
+                const kept = current.split(',').filter(t => t.includes('backdrop-filter')).join(',').trim();
                 if (kept) {
                     pill.style.transition = kept;
                 } else {
@@ -632,14 +612,15 @@ const IslandAnimation = (() => {
 
             visualizerContainer.style.opacity = '1';
             visualizerPhase = 0;
+            lastFrameTime = 0;
+            currentFPS = STANDARD_CONFIG.targetFPS;
 
             const icon = pill.querySelector('.island-icon');
             if (icon) icon.style.opacity = '0';
 
-            const FRAME_INTERVAL = 1000 / 30;
-            let lastFrameTime = 0;
-
+            const FRAME_INTERVAL = 1000 / currentFPS;
             const self = this;
+
             function tick(now) {
                 if (!isPlaying) { self.stopVisualizer(); return; }
 
@@ -650,7 +631,6 @@ const IslandAnimation = (() => {
                 lastFrameTime = now;
 
                 visualizerPhase += 0.08;
-                // Use array length to prevent out-of-bounds if config changes
                 const barCount = Math.min(visualizerBars.length, STANDARD_CONFIG.visualizerBars);
                 for (let i = 0; i < barCount; i++) {
                     if (!visualizerBars[i]) continue;
@@ -691,32 +671,23 @@ const IslandAnimation = (() => {
             const cfg = REFINED_CONFIG[currentStyle];
 
             if (currentStyle === 'minimal') {
-                // Minimal: no blur at all
                 return;
             }
 
             if (pill) {
                 const blur = state === 'panel' ? cfg.pillBlurExpanded : cfg.pillBlurDefault;
                 pill.style.backdropFilter = `blur(${blur}px) saturate(${cfg.saturatePill})`;
-                pill.style.webkitBackdropFilter = `blur(${blur}px) saturate(${cfg.saturatePill})`;
             }
             if (expanded) {
                 const blur = state === 'panel' ? cfg.panelBlurExpanded : cfg.panelBlurDefault;
                 expanded.style.backdropFilter = `blur(${blur}px) saturate(${cfg.saturatePanel})`;
-                expanded.style.webkitBackdropFilter = `blur(${blur}px) saturate(${cfg.saturatePanel})`;
             }
         },
 
         onExpand() {
             cleanupCollapseAnimation();
             clearTimeout(blurTimeout);
-
             this.applyBlur('panel');
-
-            const cfg = REFINED_CONFIG[currentStyle];
-            blurTimeout = setTimeout(() => {
-                // Animation complete
-            }, cfg.expandDuration);
         },
 
         onCollapse() {
@@ -741,11 +712,9 @@ const IslandAnimation = (() => {
                 expanded.style.transform = '';
                 expanded.style.opacity = '';
                 expanded.style.backdropFilter = '';
-                expanded.style.webkitBackdropFilter = '';
                 pill.style.transform = '';
                 pill.style.opacity = '';
                 pill.style.backdropFilter = '';
-                pill.style.webkitBackdropFilter = '';
 
                 collapseAnimListener = null;
                 self.applyBlur('pill');
@@ -756,7 +725,6 @@ const IslandAnimation = (() => {
         },
 
         onPlayStart() {
-            // Delegate to current style
             this[currentStyle].startPulse();
             this[currentStyle].startVisualizer();
         },
@@ -772,7 +740,6 @@ const IslandAnimation = (() => {
                 const cfg = REFINED_CONFIG.luxury;
                 if (!pill || !expanded) return;
 
-                // Pill: 金色边框 + 内发光 + 外发光
                 pill.style.width = `${cfg.pillWidth}px`;
                 pill.style.height = `${cfg.pillHeight}px`;
                 pill.style.border = `1.5px solid ${cfg.goldBorder}`;
@@ -784,7 +751,6 @@ const IslandAnimation = (() => {
                 `;
                 pill.style.background = 'linear-gradient(145deg, rgba(60,42,20,0.85), rgba(35,25,12,0.92))';
 
-                // Expanded panel: 深棕底 + 金色边框 + 多层阴影
                 expanded.style.width = `${cfg.expandedWidth}px`;
                 expanded.style.background = 'linear-gradient(160deg, rgba(42,31,20,0.92), rgba(26,18,10,0.96))';
                 expanded.style.border = `1px solid ${cfg.goldBorder}`;
@@ -795,7 +761,6 @@ const IslandAnimation = (() => {
                     inset 0 1px 0 rgba(212,175,55,0.1)
                 `;
 
-                // Font: 衬线感，金色标题
                 if (songName) {
                     songName.style.fontWeight = '600';
                     songName.style.letterSpacing = '0.3px';
@@ -806,8 +771,6 @@ const IslandAnimation = (() => {
                     artistName.style.letterSpacing = '0.2px';
                     artistName.style.color = 'rgba(212,175,55,0.6)';
                 }
-
-                // Cover: 金色光环
                 if (cover) {
                     cover.style.boxShadow = `0 0 16px rgba(212,175,55,0.2), 0 0 4px rgba(212,175,55,0.3)`;
                     cover.style.border = '1px solid rgba(212,175,55,0.2)';
@@ -856,15 +819,6 @@ const IslandAnimation = (() => {
                         inset 0 1px 0 rgba(255,255,255,0.06),
                         inset 0 0 12px ${cfg.goldInner}
                     `;
-                    const current = pill.style.transition || '';
-                    const kept = current.split(',').filter(t =>
-                        t.includes('backdrop-filter') || t.includes('-webkit-backdrop-filter')
-                    ).join(',').trim();
-                    if (kept) {
-                        pill.style.transition = kept;
-                    } else {
-                        pill.style.removeProperty('transition');
-                    }
                 }
             },
 
@@ -875,12 +829,13 @@ const IslandAnimation = (() => {
                 const cfg = REFINED_CONFIG.luxury;
                 visualizerContainer.style.opacity = '1';
                 visualizerPhase = 0;
+                lastFrameTime = 0;
+                currentFPS = cfg.targetFPS;
 
                 const icon = pill.querySelector('.island-icon');
                 if (icon) icon.style.opacity = '0';
 
-                const FRAME_INTERVAL = 1000 / 30;
-                let lastFrameTime = 0;
+                const FRAME_INTERVAL = 1000 / currentFPS;
 
                 function tick(now) {
                     if (!isPlaying) { Refined.luxury.stopVisualizer(); return; }
@@ -891,9 +846,8 @@ const IslandAnimation = (() => {
                     }
                     lastFrameTime = now;
 
-                    visualizerPhase += 0.06; // Slower, smoother
+                    visualizerPhase += 0.06;
                     for (let i = 0; i < cfg.visualizerBars; i++) {
-                        // Smooth sine wave for luxury
                         const base = Math.sin(visualizerPhase + i * 1.2) * 0.5 + 0.5;
                         const secondary = Math.sin(visualizerPhase * 0.7 + i * 2.1) * 0.2;
                         const t = Math.max(0, Math.min(1, base + secondary));
@@ -932,24 +886,19 @@ const IslandAnimation = (() => {
                 const cfg = REFINED_CONFIG.minimal;
                 if (!pill || !expanded) return;
 
-                // Pill: 纯黑/深色 + 极细白边 + 无模糊
                 pill.style.width = `${cfg.pillWidth}px`;
                 pill.style.height = `${cfg.pillHeight}px`;
                 pill.style.border = `1px solid ${cfg.border}`;
                 pill.style.backdropFilter = 'none';
-                pill.style.webkitBackdropFilter = 'none';
                 pill.style.boxShadow = 'none';
                 pill.style.background = 'rgba(255,255,255,0.04)';
 
-                // Expanded panel: 纯净无装饰
                 expanded.style.width = `${cfg.expandedWidth}px`;
                 expanded.style.backdropFilter = 'none';
-                expanded.style.webkitBackdropFilter = 'none';
                 expanded.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
                 expanded.style.background = 'rgba(255,255,255,0.03)';
                 expanded.style.border = `1px solid ${cfg.border}`;
 
-                // Font: 超细字重 + 大字间距
                 if (songName) {
                     songName.style.fontWeight = '300';
                     songName.style.letterSpacing = '1px';
@@ -960,22 +909,14 @@ const IslandAnimation = (() => {
                     artistName.style.letterSpacing = '0.8px';
                     artistName.style.color = cfg.textSecondary;
                 }
-
-                // Cover: 无装饰
                 if (cover) {
                     cover.style.boxShadow = 'none';
                     cover.style.border = 'none';
                 }
             },
 
-            startPulse() {
-                // Minimal: no pulse animation
-            },
-
-            stopPulse() {
-                // Nothing to clean up
-            },
-
+            startPulse() {},
+            stopPulse() {},
             startVisualizer() {
                 Refined.minimal.stopVisualizer();
                 if (!visualizerContainer) return;
@@ -983,12 +924,13 @@ const IslandAnimation = (() => {
                 const cfg = REFINED_CONFIG.minimal;
                 visualizerContainer.style.opacity = '1';
                 visualizerPhase = 0;
+                lastFrameTime = 0;
+                currentFPS = cfg.targetFPS;
 
                 const icon = pill.querySelector('.island-icon');
                 if (icon) icon.style.opacity = '0';
 
-                const FRAME_INTERVAL = 1000 / 20; // Slower for minimal
-                let lastFrameTime = 0;
+                const FRAME_INTERVAL = 1000 / currentFPS;
 
                 function tick(now) {
                     if (!isPlaying) { Refined.minimal.stopVisualizer(); return; }
@@ -999,10 +941,10 @@ const IslandAnimation = (() => {
                     }
                     lastFrameTime = now;
 
-                    visualizerPhase += 0.04; // Very slow, subtle
+                    visualizerPhase += 0.04;
                     for (let i = 0; i < cfg.visualizerBars; i++) {
                         const base = Math.sin(visualizerPhase + i * 1.5) * 0.5 + 0.5;
-                        const t = Math.max(0, Math.min(1, base * 0.6)); // Damped
+                        const t = Math.max(0, Math.min(1, base * 0.6));
                         const height = cfg.visualizerMinHeight +
                             t * (cfg.visualizerMaxHeight - cfg.visualizerMinHeight);
                         visualizerBars[i].style.height = `${height}px`;
@@ -1038,7 +980,6 @@ const IslandAnimation = (() => {
                 const cfg = REFINED_CONFIG.glassmorphism;
                 if (!pill || !expanded) return;
 
-                // Pill: 强模糊 + 紫蓝渐变 + 发光边框
                 pill.style.width = `${cfg.pillWidth}px`;
                 pill.style.height = `${cfg.pillHeight}px`;
                 pill.style.border = `1px solid ${cfg.borderGlow}`;
@@ -1049,7 +990,6 @@ const IslandAnimation = (() => {
                     inset 0 1px 0 rgba(255,255,255,0.1)
                 `;
 
-                // Expanded panel: 毛玻璃 + 渐变 + 彩色阴影
                 expanded.style.width = `${cfg.expandedWidth}px`;
                 expanded.style.background = `linear-gradient(145deg, rgba(99,102,241,0.08), rgba(168,85,247,0.08), rgba(236,72,153,0.04))`;
                 expanded.style.border = `1px solid ${cfg.borderGlow}`;
@@ -1060,7 +1000,6 @@ const IslandAnimation = (() => {
                     inset 0 1px 0 rgba(255,255,255,0.08)
                 `;
 
-                // Font: 中等字重
                 if (songName) {
                     songName.style.fontWeight = '500';
                     songName.style.color = '#ffffff';
@@ -1071,11 +1010,8 @@ const IslandAnimation = (() => {
                     artistName.style.color = 'rgba(255,255,255,0.6)';
                     artistName.style.letterSpacing = '0.1px';
                 }
-
-                // Cover: 彩色玻璃效果
                 if (cover) {
                     cover.style.backdropFilter = 'blur(6px)';
-                    cover.style.webkitBackdropFilter = 'blur(6px)';
                     cover.style.boxShadow = `0 0 20px rgba(139,92,246,0.25), 0 0 8px rgba(99,102,241,0.15)`;
                     cover.style.border = '1px solid rgba(255,255,255,0.1)';
                 }
@@ -1121,15 +1057,6 @@ const IslandAnimation = (() => {
                         0 0 16px ${cfg.glowColor},
                         inset 0 1px 0 rgba(255,255,255,0.1)
                     `;
-                    const current = pill.style.transition || '';
-                    const kept = current.split(',').filter(t =>
-                        t.includes('backdrop-filter') || t.includes('-webkit-backdrop-filter')
-                    ).join(',').trim();
-                    if (kept) {
-                        pill.style.transition = kept;
-                    } else {
-                        pill.style.removeProperty('transition');
-                    }
                 }
             },
 
@@ -1140,12 +1067,13 @@ const IslandAnimation = (() => {
                 const cfg = REFINED_CONFIG.glassmorphism;
                 visualizerContainer.style.opacity = '1';
                 visualizerPhase = 0;
+                lastFrameTime = 0;
+                currentFPS = cfg.targetFPS;
 
                 const icon = pill.querySelector('.island-icon');
                 if (icon) icon.style.opacity = '0';
 
-                const FRAME_INTERVAL = 1000 / 30;
-                let lastFrameTime = 0;
+                const FRAME_INTERVAL = 1000 / currentFPS;
 
                 function tick(now) {
                     if (!isPlaying) { Refined.glassmorphism.stopVisualizer(); return; }
@@ -1158,7 +1086,6 @@ const IslandAnimation = (() => {
 
                     visualizerPhase += 0.07;
                     for (let i = 0; i < cfg.visualizerBars; i++) {
-                        // Smooth wave with gradient-like progression
                         const base = Math.sin(visualizerPhase + i * 1.4) * 0.5 + 0.5;
                         const wave = Math.sin(visualizerPhase * 0.8 + i * 2.5) * 0.25;
                         const t = Math.max(0, Math.min(1, base + wave));
@@ -1190,6 +1117,162 @@ const IslandAnimation = (() => {
                 }
             },
         },
+
+        // ---- Cyberpunk Style (NEW!) ----
+        cyberpunk: {
+            applyThemeColors() {
+                const cfg = REFINED_CONFIG.cyberpunk;
+                if (!pill || !expanded) return;
+
+                pill.style.width = `${cfg.pillWidth}px`;
+                pill.style.height = `${cfg.pillHeight}px`;
+                pill.style.border = `1.5px solid ${cfg.borderGlow}`;
+                pill.style.background = `linear-gradient(135deg, rgba(10,10,15,0.95), rgba(20,20,30,0.9))`;
+                pill.style.boxShadow = `
+                    0 0 15px ${cfg.glowCyan},
+                    0 0 30px ${cfg.glowPink},
+                    inset 0 1px 0 rgba(255,255,255,0.1)
+                `;
+
+                expanded.style.width = `${cfg.expandedWidth}px`;
+                expanded.style.background = `linear-gradient(145deg, rgba(10,10,15,0.95), rgba(15,15,25,0.92))`;
+                expanded.style.border = `1px solid ${cfg.borderGlow}`;
+                expanded.style.boxShadow = `
+                    0 0 20px ${cfg.glowCyan},
+                    0 0 40px ${cfg.glowPink},
+                    0 20px 60px rgba(0,0,0,0.4),
+                    inset 0 1px 0 rgba(0,240,255,0.15)
+                `;
+
+                if (songName) {
+                    songName.style.fontWeight = '600';
+                    songName.style.color = cfg.neonCyan;
+                    songName.style.letterSpacing = '0.5px';
+                    songName.style.textShadow = `0 0 10px ${cfg.glowCyan}`;
+                }
+                if (artistName) {
+                    artistName.style.fontWeight = '400';
+                    artistName.style.color = cfg.neonPink;
+                    artistName.style.letterSpacing = '0.3px';
+                    artistName.style.textShadow = `0 0 8px ${cfg.glowPink}`;
+                }
+                if (cover) {
+                    cover.style.boxShadow = `
+                        0 0 20px ${cfg.glowCyan},
+                        0 0 10px ${cfg.glowPink},
+                        inset 0 0 15px rgba(0,240,255,0.2)
+                    `;
+                    cover.style.border = `1px solid ${cfg.borderGlow}`;
+                }
+            },
+
+            startPulse() {
+                Refined.cyberpunk.stopPulse();
+                if (!pill) return;
+
+                const cfg = REFINED_CONFIG.cyberpunk;
+
+                pulseTimer = setInterval(() => {
+                    if (!isPlaying || isExpanded) return;
+                    pill.style.setProperty('transition', 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s ease', 'important');
+                    pill.style.transform = `scale(${cfg.pulseScale})`;
+                    pill.style.boxShadow = `
+                        0 0 25px ${cfg.glowCyan},
+                        0 0 50px ${cfg.glowPink},
+                        0 0 15px rgba(191,0,255,0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.15)
+                    `;
+
+                    pulseTimeout = setTimeout(() => {
+                        if (!pill) return;
+                        pill.style.transform = 'scale(1)';
+                        pill.style.boxShadow = `
+                            0 0 15px ${cfg.glowCyan},
+                            0 0 30px ${cfg.glowPink},
+                            inset 0 1px 0 rgba(255,255,255,0.1)
+                        `;
+                    }, 500);
+                }, cfg.pulseInterval);
+            },
+
+            stopPulse() {
+                if (pulseTimer) { clearInterval(pulseTimer); pulseTimer = null; }
+                if (pulseTimeout) { clearTimeout(pulseTimeout); pulseTimeout = null; }
+                if (pill) {
+                    pill.style.transform = '';
+                    const cfg = REFINED_CONFIG.cyberpunk;
+                    pill.style.boxShadow = `
+                        0 0 15px ${cfg.glowCyan},
+                        0 0 30px ${cfg.glowPink},
+                        inset 0 1px 0 rgba(255,255,255,0.1)
+                    `;
+                }
+            },
+
+            startVisualizer() {
+                Refined.cyberpunk.stopVisualizer();
+                if (!visualizerContainer) return;
+
+                const cfg = REFINED_CONFIG.cyberpunk;
+                visualizerContainer.style.opacity = '1';
+                visualizerPhase = 0;
+                lastFrameTime = 0;
+                currentFPS = cfg.targetFPS;
+
+                const icon = pill.querySelector('.island-icon');
+                if (icon) icon.style.opacity = '0';
+
+                const FRAME_INTERVAL = 1000 / currentFPS;
+                const cyberColors = [cfg.neonCyan, cfg.neonPink, cfg.neonPurple];
+
+                function tick(now) {
+                    if (!isPlaying) { Refined.cyberpunk.stopVisualizer(); return; }
+
+                    if (now - lastFrameTime < FRAME_INTERVAL) {
+                        visualizerRAF = requestAnimationFrame(tick);
+                        return;
+                    }
+                    lastFrameTime = now;
+
+                    visualizerPhase += 0.1;
+                    for (let i = 0; i < cfg.visualizerBars; i++) {
+                        const base = Math.sin(visualizerPhase + i * 1.5) * 0.5 + 0.5;
+                        const pulse = Math.sin(visualizerPhase * 1.5 + i * 2) * 0.3;
+                        const t = Math.max(0, Math.min(1, base + pulse));
+                        const height = cfg.visualizerMinHeight +
+                            t * (cfg.visualizerMaxHeight - cfg.visualizerMinHeight);
+
+                        visualizerBars[i].style.height = `${height}px`;
+                        visualizerBars[i].style.background = cyberColors[i % 3];
+                        visualizerBars[i].style.boxShadow = `0 0 8px ${cyberColors[i % 3]}, 0 0 4px ${cyberColors[(i+1)%3]}`;
+                    }
+
+                    visualizerRAF = requestAnimationFrame(tick);
+                }
+
+                visualizerRAF = requestAnimationFrame(tick);
+            },
+
+            stopVisualizer() {
+                if (visualizerRAF) { cancelAnimationFrame(visualizerRAF); visualizerRAF = null; }
+
+                if (visualizerContainer) {
+                    visualizerContainer.style.opacity = '0';
+                    const icon = pill.querySelector('.island-icon');
+                    if (icon) icon.style.opacity = '';
+                }
+
+                const cfg = REFINED_CONFIG.cyberpunk;
+                const cyberColors = [cfg.neonCyan, cfg.neonPink, cfg.neonPurple];
+                for (let i = 0; i < cfg.visualizerBars; i++) {
+                    if (visualizerBars[i]) {
+                        visualizerBars[i].style.height = `${cfg.visualizerMinHeight}px`;
+                        visualizerBars[i].style.background = cyberColors[i % 3];
+                        visualizerBars[i].style.boxShadow = 'none';
+                    }
+                }
+            },
+        },
     };
 
     // ========== Clear Refined Theme ==========
@@ -1212,20 +1295,20 @@ const IslandAnimation = (() => {
             songName.style.fontWeight = '';
             songName.style.letterSpacing = '';
             songName.style.color = '';
+            songName.style.textShadow = '';
         }
         if (artistName) {
             artistName.style.fontWeight = '';
             artistName.style.letterSpacing = '';
             artistName.style.color = '';
+            artistName.style.textShadow = '';
         }
         if (cover) {
             cover.style.backdropFilter = '';
-            cover.style.webkitBackdropFilter = '';
             cover.style.boxShadow = '';
+            cover.style.border = '';
         }
     }
-
-    // ========== Unified applyBlur ==========
 
     function applyBlur(state) {
         if (isRefinedMode) {
@@ -1251,5 +1334,8 @@ const IslandAnimation = (() => {
         setRefinedStyle,
         enableRefinedMode,
         disableRefinedMode,
+        getAvailableStyles: () => Object.keys(REFINED_CONFIG),
+        getCurrentStyle: () => currentStyle,
+        isRefined: () => isRefinedMode,
     };
 })();
