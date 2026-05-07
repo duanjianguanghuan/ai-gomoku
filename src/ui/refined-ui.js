@@ -16,7 +16,7 @@ const RefinedUI = (() => {
         if (loaded) return;
         cssLink = document.createElement('link');
         cssLink.rel = 'stylesheet';
-        cssLink.href = 'refined-style.css';
+        cssLink.href = 'src/styles/refined-style.css';
         cssLink.id = 'refined-css-link';
         document.head.appendChild(cssLink);
         loaded = true;
