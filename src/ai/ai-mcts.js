@@ -1,496 +1,371 @@
 /**
- * AI 五子棋 - 蒙特卡洛树搜索引擎 v1 (MCTS)
- * 基于蒙特卡洛树搜索的 AI 决策引擎
- *
- * 核心算法：
- *   1. Selection（选择）：UCB1 公式选择最优子节点
- *   2. Expansion（扩展）：展开未访问的子节点
- *   3. Simulation（模拟）：随机模拟至终局
- *   4. Backpropagation（回传）：更新路径上所有节点的胜率
- *
- * 优化特性：
- *   - RAVE (Rapid Action Value Estimation)：加速收敛
- *   - 智能模拟：非纯随机，基于启发式规则模拟
- *   - 即时获胜/防守权重提升
- *   - 时间限制 + 迭代次数双控制
- *   - 与现有模块兼容（IIFE 模式，标准接口）
+ * AI 五子棋 - MCTS (蒙特卡洛树搜索) 算法模块 v1
+ * 
+ * MCTS 算法特点：
+ * - 不需要评估函数，通过随机模拟评估位置
+ * - 适合复杂棋类游戏
+ * - 可以与深度搜索结合使用
+ * 
+ * 核心概念：
+ * - UCT (Upper Confidence Bound applied to Trees)
+ * - 选择、扩展、模拟、反向传播
  */
 
 const AIMCTS = (() => {
-    const EMPTY = 0, BLACK = 1, WHITE = 2;
-    const DIRECTIONS = [[1, 0], [0, 1], [1, 1], [1, -1]];
+    'use strict';
 
-    // MCTS 配置
-    const MCTS_CONFIG = {
-        maxIterations: 5000,     // 降低迭代次数，提升响应速度
-        maxTimeMs: 1500,         // 降低时间限制
-        explorationConstant: 1.2, // UCB1 探索常数（五子棋偏向利用）
-        raveWeight: 0.5,        // RAVE 权重（0=关闭RAVE，1=纯RAVE）
-        raveDecay: 0.01,        // RAVE 衰减因子
-        smartSimulation: true,  // 启用智能模拟（非纯随机）
-        winBonus: 100,          // 即时获胜节点额外奖励
-        blockBonus: 80,         // 即时防守节点额外奖励
+    const EMPTY = 0, BLACK = 1, WHITE = 2;
+    
+    // 配置参数
+    const CONFIG = {
+        maxIterations: 50000,        // 最大迭代次数
+        maxTime: 3000,              // 最大计算时间（毫秒）
+        exploration: Math.sqrt(2),  // UCT 探索参数
+        simulationDepth: 15,         // 模拟深度
+        earlyStopping: true,         // 提前停止（发现必胜）
+        reuseTree: false             // 是否复用搜索树
     };
 
-    let enabled = false;
+    let rootNode = null;
+    let currentBoard = null;
+    let aiPiece = WHITE;
+    let nodeCount = 0;
 
-    function isEnabled() { return enabled; }
-    function setEnabled(val) { enabled = !!val; }
-
-    // ========== MCTS 树节点 ==========
-
+    // MCTS 树节点
     class MCTSNode {
-        constructor(board, row, col, piece, parent, moveNumber) {
-            this.row = row;
-            this.col = col;
-            this.piece = piece;       // 落子方
-            this.parent = parent;
-            this.children = [];
-            this.untriedMoves = [];    // 未展开的候选位置
-
-            // 统计数据
-            this.visits = 0;
-            this.wins = 0;
-            this.draws = 0;
-
-            // RAVE 统计
-            this.raveWins = 0;
-            this.raveVisits = 0;
-
-            // 落子编号（用于RAVE映射）
-            this.moveNumber = moveNumber;
+        constructor(board, piece, parent = null, move = null) {
+            this.board = board;           // 棋盘状态
+            this.piece = piece;          // 当前要落子的玩家
+            this.parent = parent;        // 父节点
+            this.move = move;            // 导致此节点的落子
+            this.children = [];          // 子节点
+            this.wins = 0;              // 获胜次数
+            this.visits = 0;             // 访问次数
+            this.untriedMoves = null;    // 未尝试的落子
         }
 
-        get ucb1() {
+        // UCT 值计算
+        getUCTValue(exploration) {
             if (this.visits === 0) return Infinity;
-            const exploitation = this.wins / this.visits;
-            const exploration = MCTS_CONFIG.explorationConstant *
-                Math.sqrt(Math.log(this.parent.visits) / this.visits);
-            return exploitation + exploration;
+            return (this.wins / this.visits) + 
+                   exploration * Math.sqrt(Math.log(this.parent.visits) / this.visits);
         }
 
-        get raveValue() {
-            if (this.raveVisits === 0) return 0;
-            return this.raveWins / this.raveVisits;
+        // 是否是叶子节点
+        isLeaf() {
+            return this.children.length === 0;
         }
 
-        get ucb1Rave() {
-            if (this.visits === 0) return Infinity;
-            const beta = Math.sqrt(MCTS_CONFIG.raveWeight /
-                (3 * this.visits + MCTS_CONFIG.raveDecay * this.visits * this.visits));
-            const mcValue = this.wins / this.visits;
-            const raveVal = this.raveVisits > 0 ? this.raveWins / this.raveVisits : mcValue;
-            const exploration = MCTS_CONFIG.explorationConstant *
-                Math.sqrt(Math.log(this.parent.visits) / this.visits);
-            return (1 - beta) * mcValue + beta * raveVal + exploration;
+        // 是否是完全展开
+        isFullyExpanded() {
+            return this.untriedMoves !== null && this.untriedMoves.length === 0;
         }
     }
 
-    // ========== 主入口 ==========
+    // 初始化
+    function init() {
+        rootNode = null;
+        currentBoard = null;
+        nodeCount = 0;
+    }
 
-    function getBestMove(board, aiPiece, size) {
-        if (!enabled) return null;
-        const playerPiece = aiPiece === BLACK ? WHITE : BLACK;
+    // 设置 AI 棋子
+    function setAIPiece(piece) {
+        aiPiece = piece;
+    }
 
-        // 空棋盘：抢占天元
-        if (isBoardEmpty(board, size)) {
-            const c = Math.floor(size / 2);
-            return { row: c, col: c };
+    // 获取有效落子（带邻居检测）
+    function getValidMoves(board, size, range = 2) {
+        if (typeof AIUtils !== 'undefined') {
+            return AIUtils.getValidMoves(board, size, range);
         }
 
-        // 即时获胜检测
-        const winMove = findWinMove(board, aiPiece, size);
-        if (winMove) return { ...winMove, from: 'mcts_win', priority: 100 };
+        const moves = new Map();
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+                if (board[r][c] !== EMPTY) continue;
+                
+                let hasNeighbor = false;
+                const minR = Math.max(0, r - range);
+                const maxR = Math.min(size - 1, r + range);
+                const minC = Math.max(0, c - range);
+                const maxC = Math.min(size - 1, c + range);
 
-        // 即时防守检测
-        const blockMove = findBlockMove(board, playerPiece, size);
-        if (blockMove) return { ...blockMove, from: 'mcts_block', priority: 99 };
+                outer:
+                for (let nr = minR; nr <= maxR; nr++) {
+                    for (let nc = minC; nc <= maxC; nc++) {
+                        if (nr === r && nc === c) continue;
+                        if (board[nr][nc] !== EMPTY) {
+                            hasNeighbor = true;
+                            break outer;
+                        }
+                    }
+                }
 
-        // MCTS 搜索
-        const candidates = getCandidates(board, size, 30);
-        if (candidates.length === 0) return null;
-        if (candidates.length === 1) return { row: candidates[0].row, col: candidates[0].col };
+                if (hasNeighbor) {
+                    moves.set(r * size + c, { row: r, col: c });
+                }
+            }
+        }
+        return Array.from(moves.values());
+    }
 
-        const root = new MCTSNode(board, -1, -1, null, 0);
-        root.untriedMoves = candidates.map(c => ({ row: c.row, col: c.col }));
+    // 检查获胜
+    function checkWin(board, row, col, piece, size) {
+        if (typeof AIUtils !== 'undefined') {
+            return AIUtils.checkWin(board, row, col, piece, size);
+        }
 
+        const directions = [[1, 0], [0, 1], [1, 1], [1, -1]];
+        for (const [dr, dc] of directions) {
+            let count = 1;
+            
+            let r = row + dr, c = col + dc;
+            while (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === piece) {
+                count++;
+                r += dr;
+                c += dc;
+            }
+            
+            r = row - dr;
+            c = col - dc;
+            while (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === piece) {
+                count++;
+                r -= dr;
+                c -= dc;
+            }
+            
+            if (count >= 5) return true;
+        }
+        return false;
+    }
+
+    // 获取对手
+    function getOpponent(piece) {
+        return piece === BLACK ? WHITE : BLACK;
+    }
+
+    // 复制棋盘
+    function copyBoard(board) {
+        return board.map(row => [...row]);
+    }
+
+    // 选择最佳子节点（UCT）
+    function selectBestChild(node) {
+        let bestChild = null;
+        let bestValue = -Infinity;
+
+        for (const child of node.children) {
+            const uctValue = child.getUCTValue(CONFIG.exploration);
+            if (uctValue > bestValue) {
+                bestValue = uctValue;
+                bestChild = child;
+            }
+        }
+
+        return bestChild;
+    }
+
+    // 扩展节点
+    function expandNode(node, board, size) {
+        if (node.untriedMoves === null) {
+            node.untriedMoves = getValidMoves(board, size, 2);
+        }
+
+        if (node.untriedMoves.length === 0) return null;
+
+        // 随机选择一个未尝试的落子
+        const moveIndex = Math.floor(Math.random() * node.untriedMoves.length);
+        const move = node.untriedMoves.splice(moveIndex, 1)[0];
+
+        // 创建新棋盘
+        const newBoard = copyBoard(board);
+        newBoard[move.row][move.col] = node.piece;
+
+        // 创建新节点
+        const childNode = new MCTSNode(newBoard, getOpponent(node.piece), node, move);
+        node.children.push(childNode);
+
+        return childNode;
+    }
+
+    // 模拟游戏（随机落子）
+    function simulate(node, board, size) {
+        let currentPiece = node.piece;
+        let simBoard = copyBoard(board);
+        let moves = 0;
+
+        // 检查当前位置是否已获胜
+        if (node.move) {
+            if (checkWin(simBoard, node.move.row, node.move.col, 
+                        currentPiece === aiPiece ? getOpponent(aiPiece) : aiPiece, size)) {
+                return currentPiece === aiPiece ? 0 : 1; // AI 输了或赢了
+            }
+        }
+
+        while (moves < CONFIG.simulationDepth) {
+            const validMoves = getValidMoves(simBoard, size, 2);
+            if (validMoves.length === 0) break;
+
+            // 优先选择能获胜的落子
+            for (const move of validMoves) {
+                simBoard[move.row][move.col] = currentPiece;
+                if (checkWin(simBoard, move.row, move.col, currentPiece, size)) {
+                    simBoard[move.row][move.col] = EMPTY;
+                    return currentPiece === aiPiece ? 1 : 0;
+                }
+                simBoard[move.row][move.col] = EMPTY;
+            }
+
+            // 随机选择
+            const move = validMoves[Math.floor(Math.random() * validMoves.length)];
+            simBoard[move.row][move.col] = currentPiece;
+
+            currentPiece = getOpponent(currentPiece);
+            moves++;
+        }
+
+        // 模拟结束，返回平局或评估
+        return 0.5;
+    }
+
+    // 反向传播
+    function backpropagate(node, result) {
+        let currentNode = node;
+        
+        while (currentNode !== null) {
+            currentNode.visits++;
+            
+            // 如果是 AI 的节点，增加胜率
+            // 注意：result 是相对于 AI 的结果
+            if (currentNode.piece === getOpponent(aiPiece)) {
+                currentNode.wins += result;
+            }
+            
+            currentNode = currentNode.parent;
+        }
+    }
+
+    // MCTS 主循环
+    function search(board, piece, size) {
         const startTime = performance.now();
-        let iterations = 0;
+        nodeCount = 0;
+
+        // 初始化根节点
+        if (CONFIG.reuseTree && rootNode && currentBoard) {
+            // 尝试复用之前的树
+            rootNode = findExistingNode(board, rootNode);
+        } else {
+            rootNode = new MCTSNode(copyBoard(board), piece);
+        }
+
+        currentBoard = copyBoard(board);
+        aiPiece = piece;
 
         // 迭代搜索
-        while (iterations < MCTS_CONFIG.maxIterations &&
-               (performance.now() - startTime) < MCTS_CONFIG.maxTimeMs) {
-            const path = selectNode(root, board, size);
-            const leaf = path[path.length - 1];
-            const result = expandAndSimulate(leaf, board, aiPiece, size);
-            backpropagate(leaf, result, aiPiece);
+        while (nodeCount < CONFIG.maxIterations) {
+            // 超时检查
+            if (performance.now() - startTime > CONFIG.maxTime) {
+                console.log(`[MCTS] Timeout after ${nodeCount} iterations`);
+                break;
+            }
 
-            // 清理 selectNode 放置的棋子（逆序移除）
-            for (let i = path.length - 1; i >= 1; i--) {
-                // 仅当棋子仍存在时才移除（避免与 expandAndSimulate 重复清理）
-                if (board[path[i].row][path[i].col] === path[i].piece) {
-                    board[path[i].row][path[i].col] = EMPTY;
+            nodeCount++;
+            let node = rootNode;
+            let simBoard = copyBoard(rootNode.board);
+
+            // 选择阶段
+            while (!node.isLeaf() && node.isFullyExpanded()) {
+                node = selectBestChild(node);
+                simBoard[node.move.row][node.move.col] = node.parent.piece;
+            }
+
+            // 检查游戏是否结束
+            if (node.move && checkWin(simBoard, node.move.row, node.move.col, 
+                                     getOpponent(node.piece), size)) {
+                // 父节点获胜
+                backpropagate(node, node.piece === aiPiece ? 0 : 1);
+                continue;
+            }
+
+            // 扩展阶段
+            if (!node.isFullyExpanded()) {
+                node = expandNode(node, simBoard, size);
+                if (node) {
+                    simBoard[node.move.row][node.move.col] = getOpponent(node.parent.piece);
                 }
             }
 
-            iterations++;
+            // 模拟阶段
+            if (node) {
+                const result = simulate(node, simBoard, size);
+                backpropagate(node, result);
+            }
         }
 
         // 选择访问次数最多的子节点
-        let bestChild = null, bestVisits = -1;
-        for (const child of root.children) {
+        let bestChild = null;
+        let bestVisits = -1;
+
+        for (const child of rootNode.children) {
             if (child.visits > bestVisits) {
                 bestVisits = child.visits;
                 bestChild = child;
             }
         }
 
-        if (!bestChild) return { row: candidates[0].row, col: candidates[0].col };
+        const thinkTime = performance.now() - startTime;
+        console.log(`[MCTS] Completed: ${nodeCount} iterations, ${thinkTime.toFixed(2)}ms`);
 
+        return bestChild ? bestChild.move : getValidMoves(board, size, 2)[0];
+    }
+
+    // 查找现有节点（用于树复用）
+    function findExistingNode(board, node) {
+        if (node.move === null) return node;
+
+        for (const child of node.children) {
+            if (child.move && child.move.row === node.move?.row && 
+                child.move.col === node.move?.col) {
+                return child;
+            }
+        }
+        return new MCTSNode(copyBoard(board), node.piece);
+    }
+
+    // 获取最佳移动
+    function getBestMove(board, piece, size) {
+        try {
+            return search(board, piece, size);
+        } catch (error) {
+            console.error('[MCTS] Error:', error);
+            // 回退到随机落子
+            const moves = getValidMoves(board, size, 2);
+            return moves.length > 0 ? moves[0] : { row: 7, col: 7 };
+        }
+    }
+
+    // 获取统计信息
+    function getStats() {
+        if (!rootNode) return null;
         return {
-            row: bestChild.row,
-            col: bestChild.col,
-            from: 'mcts',
-            priority: 75,
-            score: bestChild.visits,
-            winRate: (bestChild.wins / bestChild.visits * 100).toFixed(1) + '%',
-            iterations
+            iterations: nodeCount,
+            rootVisits: rootNode.visits,
+            children: rootNode.children.map(c => ({
+                move: c.move,
+                visits: c.visits,
+                wins: c.wins,
+                winRate: c.visits > 0 ? (c.wins / c.visits * 100).toFixed(1) + '%' : '0%'
+            }))
         };
     }
 
-    // ========== Selection（选择） ==========
-
-    function selectNode(node, board, size) {
-        const path = [node];
-        while (node.untriedMoves.length === 0 && node.children.length > 0) {
-            // UCB1 + RAVE 选择最优子节点
-            let bestChild = null, bestUCB = -Infinity;
-            for (const child of node.children) {
-                const ucb = child.ucb1Rave;
-                if (ucb > bestUCB) {
-                    bestUCB = ucb;
-                    bestChild = child;
-                }
-            }
-            if (bestChild) {
-                board[bestChild.row][bestChild.col] = bestChild.piece;
-                node = bestChild;
-                path.push(node);
-            } else break;
-        }
-        return path;
-    }
-
-    // ========== Expansion + Simulation（扩展 + 模拟） ==========
-
-    function expandAndSimulate(node, board, aiPiece, size) {
-        // 扩展：选择一个未尝试的移动
-        if (node.untriedMoves.length > 0) {
-            const idx = Math.floor(Math.random() * node.untriedMoves.length);
-            const move = node.untriedMoves.splice(idx, 1)[0];
-            const nextPiece = node.piece === EMPTY ? aiPiece :
-                (node.piece === BLACK ? WHITE : BLACK);
-
-            const child = new MCTSNode(board, move.row, move.col, nextPiece, node,
-                node.moveNumber + 1);
-
-            // 智能排序未尝试的移动（优先高价值位置）
-            if (node.untriedMoves.length > 0) {
-                sortUntriedMoves(node.untriedMoves, board, nextPiece, size);
-            }
-
-            node.children.push(child);
-            board[move.row][move.col] = nextPiece;
-
-            // 检查是否即时获胜
-            if (checkWin(board, move.row, move.col, nextPiece, size)) {
-                const result = { winner: nextPiece, moves: 1 };
-                board[move.row][move.col] = EMPTY;
-                return result;
-            }
-
-            node = child;
-        }
-
-        // 模拟：从当前节点随机模拟至终局
-        const result = simulate(board, node.piece, aiPiece, size);
-
-        // 清理扩展阶段放置的棋子（非根节点且非即时获胜时需要清理）
-        if (node.row >= 0 && node.col >= 0) {
-            board[node.row][node.col] = EMPTY;
-        }
-
-        return result;
-    }
-
-    // ========== Simulation（模拟） ==========
-
-    function simulate(board, currentPiece, aiPiece, size) {
-        const simBoard = board.map(row => [...row]);
-        let simPiece = currentPiece;
-        let moveCount = 0;
-        const maxMoves = size * size;
-        const simMoves = []; // 记录模拟中的所有走子（用于 RAVE/AMAF）
-
-        // 收集候选位置
-        let candidates = getCandidatesFast(simBoard, size);
-
-        while (candidates.length > 0 && moveCount < maxMoves) {
-            let move;
-
-            if (MCTS_CONFIG.smartSimulation && moveCount < 30) {
-                // 智能模拟：优先检查即时获胜/防守
-                move = findSmartSimMove(simBoard, simPiece, candidates, size);
-            } else {
-                // 随机模拟
-                const idx = Math.floor(Math.random() * candidates.length);
-                move = candidates[idx];
-            }
-
-            simBoard[move.row][move.col] = simPiece;
-            simMoves.push({ row: move.row, col: move.col });
-
-            if (checkWin(simBoard, move.row, move.col, simPiece, size)) {
-                return { winner: simPiece, moves: moveCount + 1, simMoves };
-            }
-
-            simPiece = simPiece === BLACK ? WHITE : BLACK;
-            moveCount++;
-
-            // 更新候选（只添加新邻居，不移除旧的以提升性能）
-            if (moveCount % 5 === 0) {
-                candidates = getCandidatesFast(simBoard, size);
-            } else {
-                addNeighbors(candidates, simBoard, move.row, move.col, size);
-            }
-        }
-
-        return { winner: 'draw', moves: moveCount, simMoves };
-    }
-
-    /**
-     * 智能模拟移动选择
-     */
-    function findSmartSimMove(board, piece, candidates, size) {
-        const opp = piece === BLACK ? WHITE : BLACK;
-
-        // Only check last few candidates (most likely to have winning moves)
-        const checkCount = Math.min(candidates.length, 12);
-        const startIdx = Math.max(0, candidates.length - checkCount);
-
-        // 1. Check for immediate win
-        for (let i = startIdx; i < candidates.length; i++) {
-            const { row, col } = candidates[i];
-            board[row][col] = piece;
-            if (checkWin(board, row, col, piece, size)) {
-                board[row][col] = EMPTY;
-                return { row, col };
-            }
-            board[row][col] = EMPTY;
-        }
-
-        // 2. Check for immediate block
-        for (let i = startIdx; i < candidates.length; i++) {
-            const { row, col } = candidates[i];
-            board[row][col] = opp;
-            if (checkWin(board, row, col, opp, size)) {
-                board[row][col] = EMPTY;
-                return { row, col };
-            }
-            board[row][col] = EMPTY;
-        }
-
-        // 3. Heuristic selection (sample-based, faster than evaluating all)
-        const sampleSize = Math.min(candidates.length, 5);
-        let bestMove = candidates[Math.floor(Math.random() * candidates.length)];
-        let bestScore = -1;
-        for (let i = 0; i < sampleSize; i++) {
-            const idx = Math.floor(Math.random() * candidates.length);
-            const { row, col } = candidates[idx];
-            const score = quickEvalPosition(board, row, col, piece, size);
-            if (score > bestScore) {
-                bestScore = score;
-                bestMove = { row, col };
-            }
-        }
-        return bestMove;
-    }
-
-    // ========== Backpropagation（回传） ==========
-
-    function backpropagate(node, result, aiPiece) {
-        while (node !== null) {
-            node.visits++;
-
-            // 判断此节点对 AI 是否为胜
-            if (result.winner === 'draw') {
-                node.draws++;
-            } else if (result.winner === aiPiece) {
-                node.wins++;
-            }
-
-            // RAVE 更新（AMAF：All Moves As First）
-            // 检查模拟中走过的位置是否与当前节点位置匹配
-            if (result.simMoves) {
-                for (const m of result.simMoves) {
-                    if (m.row === node.row && m.col === node.col) {
-                        node.raveVisits++;
-                        if (result.winner === node.piece) node.raveWins++;
-                        break; // 每个节点位置最多匹配一次
-                    }
-                }
-            }
-
-            node = node.parent;
-        }
-    }
-
-    // ========== 辅助函数 ==========
-
-    function findWinMove(board, piece, size) {
-        const candidates = getCandidatesFast(board, size);
-        for (const { row, col } of candidates) {
-            board[row][col] = piece;
-            if (checkWin(board, row, col, piece, size)) {
-                board[row][col] = EMPTY;
-                return { row, col };
-            }
-            board[row][col] = EMPTY;
-        }
-        return null;
-    }
-
-    function findBlockMove(board, oppPiece, size) {
-        const candidates = getCandidatesFast(board, size);
-        for (const { row, col } of candidates) {
-            board[row][col] = oppPiece;
-            if (checkWin(board, row, col, oppPiece, size)) {
-                board[row][col] = EMPTY;
-                return { row, col };
-            }
-            board[row][col] = EMPTY;
-        }
-        return null;
-    }
-
-    function getCandidates(board, size, maxCount) {
-        const candidates = getCandidatesFast(board, size);
-        // 按启发式评分排序
-        for (const cand of candidates) {
-            cand.score = quickEvalPosition(board, cand.row, cand.col, BLACK, size) +
-                         quickEvalPosition(board, cand.row, cand.col, WHITE, size);
-        }
-        candidates.sort((a, b) => b.score - a.score);
-        return candidates.slice(0, maxCount);
-    }
-
-    function getCandidatesFast(board, size) {
-        const set = new Set();
-        const candidates = [];
-        const range = 2;
-
-        for (let r = 0; r < size; r++) {
-            for (let c = 0; c < size; c++) {
-                if (board[r][c] === EMPTY) continue;
-                for (let dr = -range; dr <= range; dr++) {
-                    for (let dc = -range; dc <= range; dc++) {
-                        const nr = r + dr, nc = c + dc;
-                        if (nr >= 0 && nr < size && nc >= 0 && nc < size &&
-                            board[nr][nc] === EMPTY) {
-                            const key = nr * size + nc;
-                            if (!set.has(key)) {
-                                set.add(key);
-                                candidates.push({ row: nr, col: nc });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return candidates;
-    }
-
-    function addNeighbors(candidates, board, row, col, size) {
-        const range = 2;
-        // Build a Set of existing positions for O(1) lookup
-        const existing = new Set();
-        for (const c of candidates) existing.add(c.row * size + c.col);
-
-        for (let dr = -range; dr <= range; dr++) {
-            for (let dc = -range; dc <= range; dc++) {
-                const nr = row + dr, nc = col + dc;
-                if (nr >= 0 && nr < size && nc >= 0 && nc < size &&
-                    board[nr][nc] === EMPTY) {
-                    const key = nr * size + nc;
-                    if (!existing.has(key)) {
-                        existing.add(key);
-                        candidates.push({ row: nr, col: nc });
-                    }
-                }
-            }
-        }
-    }
-
-    function sortUntriedMoves(moves, board, piece, size) {
-        // 按快速评估排序（高价值优先展开）
-        for (const move of moves) {
-            move.score = quickEvalPosition(board, move.row, move.col, piece, size);
-        }
-        moves.sort((a, b) => b.score - a.score);
-    }
-
-    function quickEvalPosition(board, row, col, piece, size) {
-        let score = 0;
-        for (const [dr, dc] of DIRECTIONS) {
-            let count = 1, openEnds = 0;
-            let r = row + dr, c = col + dc;
-            while (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === piece) {
-                count++; r += dr; c += dc;
-            }
-            if (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === EMPTY) openEnds++;
-            r = row - dr; c = col - dc;
-            while (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === piece) {
-                count++; r -= dr; c -= dc;
-            }
-            if (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === EMPTY) openEnds++;
-
-            if (count >= 5) return 100000;
-            if (count === 4 && openEnds >= 1) score += 50000;
-            else if (count === 3 && openEnds === 2) score += 5000;
-            else if (count === 3 && openEnds === 1) score += 500;
-            else if (count === 2 && openEnds === 2) score += 200;
-            else if (count === 2 && openEnds === 1) score += 50;
-        }
-        const center = (size - 1) / 2;
-        score += Math.max(0, (size - Math.abs(row - center) - Math.abs(col - center))) * 2;
-        return score;
-    }
-
-    function checkWin(board, row, col, piece, size) {
-        for (const [dr, dc] of DIRECTIONS) {
-            let count = 1;
-            let r = row + dr, c = col + dc;
-            while (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === piece) {
-                count++; r += dr; c += dc;
-            }
-            r = row - dr; c = col - dc;
-            while (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === piece) {
-                count++; r -= dr; c -= dc;
-            }
-            if (count >= 5) return true;
-        }
-        return false;
-    }
-
-    function isBoardEmpty(board, size) {
-        for (let r = 0; r < size; r++)
-            for (let c = 0; c < size; c++)
-                if (board[r][c] !== EMPTY) return false;
-        return true;
-    }
-
     return {
-        isEnabled, setEnabled, getBestMove,
-        getConfig: () => ({ ...MCTS_CONFIG }),
+        init,
+        setAIPiece,
+        getBestMove,
+        getStats,
+        CONFIG,
+        search
     };
 })();

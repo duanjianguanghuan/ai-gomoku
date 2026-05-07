@@ -1,19 +1,27 @@
 /**
- * AI 五子棋 - AI 模块 v11（性能优化版）
- * 基于 v10 全面优化升级
+ * AI 五子棋 - AI 模块 v12（多算法集成版）
+ * 基于 v11 全面优化升级
  * 
- * v11 核心优化：
+ * v12 核心优化：
  *   - 集成 AIUtils 高性能工具函数
  *   - 添加性能监控和超时控制
  *   - 优化 Minimax 搜索排序
  *   - 添加早期终止条件
  *   - 减少重复计算
+ *   - 新增 MCTS、NegaMax、评估器算法支持
  */
 
 const GomokuAI = (() => {
     'use strict';
 
     const EMPTY = 0, BLACK = 1, WHITE = 2;
+
+    // AI 算法类型
+    const ALGORITHM = {
+        MINIMAX: 'minimax',      // 传统 Minimax
+        NEGAMAX: 'negamax',      // NegaMax
+        MCTS: 'mcts'            // 蒙特卡洛树搜索
+    };
 
     // 专业级棋型评分
     const SCORES = {
@@ -36,15 +44,16 @@ const GomokuAI = (() => {
 
     // 难度配置
     const DIFFICULTY_CONFIG = {
-        1: { depth: 2, candidates: 15, usePattern: true, useStrategy: false, useTactics: true, name: '简单' },
-        2: { depth: 3, candidates: 18, usePattern: true, useStrategy: true, useTactics: true, name: '中等' },
-        3: { depth: 3, candidates: 15, usePattern: true, useStrategy: true, useTactics: true, name: '困难' },
+        1: { depth: 2, candidates: 15, usePattern: true, useStrategy: false, useTactics: true, name: '简单', algorithm: ALGORITHM.MINIMAX },
+        2: { depth: 3, candidates: 18, usePattern: true, useStrategy: true, useTactics: true, name: '中等', algorithm: ALGORITHM.MINIMAX },
+        3: { depth: 3, candidates: 15, usePattern: true, useStrategy: true, useTactics: true, name: '困难', algorithm: ALGORITHM.NEGAMAX },
     };
 
     let difficulty = 2, aiPiece = WHITE, playerPiece = BLACK;
     let memoryEnabled = true;
     let tacticalWeights = { attackWeight: 1.5, defenseWeight: 0.8 };
     let memBonusFn = null;
+    let currentAlgorithm = ALGORITHM.MINIMAX;
     
     // 性能限制
     const MAX_NODES = 300000;
@@ -151,38 +160,31 @@ const GomokuAI = (() => {
         return null;
     }
 
-    function getBestMove(board) {
-        const startTime = performance.now();
-        const size = board.length;
-        const config = DIFFICULTY_CONFIG[difficulty];
-
-        // 清空缓存
-        evalCache.clear();
-        nodeCount = 0;
-        vctNodeCount = 0;
-
-        // 空棋盘：下天元
-        if (isBoardEmpty(board, size)) {
-            if (memoryEnabled && typeof GomokuMemory !== 'undefined' && GomokuMemory.getMemoryOpening) {
-                const memOpen = GomokuMemory.getMemoryOpening(size);
-                if (memOpen && board[memOpen.row][memOpen.col] === EMPTY) return memOpen;
-            }
-            const c = Math.floor(size / 2);
-            return { row: c, col: c };
+    // 根据算法类型选择最佳移动
+    function getBestMoveByAlgorithm(board, config, size) {
+        const algorithm = config.algorithm || ALGORITHM.MINIMAX;
+        
+        switch (algorithm) {
+            case ALGORITHM.NEGAMAX:
+                // 使用 NegaMax 算法
+                if (typeof AINegamax !== 'undefined' && AINegamax.getBestMove) {
+                    return AINegamax.getBestMove(board, aiPiece, size);
+                }
+                // 回退到 Minimax
+            case ALGORITHM.MCTS:
+                // 使用 MCTS 算法
+                if (typeof AIMCTS !== 'undefined' && AIMCTS.getBestMove) {
+                    return AIMCTS.getBestMove(board, aiPiece, size);
+                }
+                // 回退到 Minimax
+            case ALGORITHM.MINIMAX:
+            default:
+                return getBestMoveMinimax(board, config, size);
         }
+    }
 
-        // 第二手：使用专业开局库
-        if (moveCount(board, size) === 1) {
-            const opening = getOpeningMove(board, size);
-            if (opening) return opening;
-        }
-
-        // 获取战术权重
-        if (config.useTactics && typeof AITactics !== 'undefined' && AITactics.getTacticalWeights) {
-            const tactics = AITactics.getTacticalWeights(board, aiPiece, size);
-            updateTacticalWeights(tactics);
-        }
-
+    // Minimax 主算法
+    function getBestMoveMinimax(board, config, size) {
         const candidates = getCandidates(board, size, config.candidates);
         if (candidates.length === 0) { const c = Math.floor(size / 2); return { row: c, col: c }; }
 
@@ -241,12 +243,6 @@ const GomokuAI = (() => {
         let bestScore = -Infinity, bestMove = candidates[0];
 
         for (const { row, col } of candidates) {
-            // 超时检查
-            if (performance.now() - startTime > MAX_TIME_MS) {
-                console.warn('[AI] Timeout reached, returning best move so far');
-                break;
-            }
-
             board[row][col] = aiPiece;
             const score = minimax(board, config.depth - 1, false, -Infinity, Infinity, size);
             board[row][col] = EMPTY;
@@ -259,31 +255,72 @@ const GomokuAI = (() => {
             }
         }
 
-        // 8. 模式识别共识
-        if (config.usePattern && typeof AIPattern !== 'undefined' && AIPattern.getSuggestion) {
-            const patternSuggestion = AIPattern.getSuggestion(board, aiPiece);
-            if (patternSuggestion) {
-                const consensus = AIPattern.consensus ? AIPattern.consensus(bestMove, patternSuggestion, board, aiPiece) : null;
-                if (consensus) bestMove = consensus;
+        return bestMove;
+    }
+
+    function getBestMove(board) {
+        const startTime = performance.now();
+        const size = board.length;
+        const config = DIFFICULTY_CONFIG[difficulty];
+
+        // 清空缓存
+        evalCache.clear();
+        nodeCount = 0;
+        vctNodeCount = 0;
+        currentAlgorithm = config.algorithm || ALGORITHM.MINIMAX;
+
+        // 空棋盘：下天元
+        if (isBoardEmpty(board, size)) {
+            if (memoryEnabled && typeof GomokuMemory !== 'undefined' && GomokuMemory.getMemoryOpening) {
+                const memOpen = GomokuMemory.getMemoryOpening(size);
+                if (memOpen && board[memOpen.row][memOpen.col] === EMPTY) return memOpen;
             }
+            const c = Math.floor(size / 2);
+            return { row: c, col: c };
         }
 
-        // 9. 策略共识
-        if (config.useStrategy && typeof AIStrategy !== 'undefined' && AIStrategy.getStrategicMove) {
-            const strategic = AIStrategy.getStrategicMove(board, aiPiece, size, tacticalWeights);
-            if (strategic && strategic.confidence > 55) {
-                const stratMove = { row: strategic.row, col: strategic.col };
-                if (typeof AIPattern !== 'undefined' && AIPattern.consensus) {
-                    const consensus = AIPattern.consensus(bestMove, stratMove, board, aiPiece);
-                    if (consensus) bestMove = consensus;
+        // 第二手：使用专业开局库
+        if (moveCount(board, size) === 1) {
+            const opening = getOpeningMove(board, size);
+            if (opening) return opening;
+        }
+
+        // 获取战术权重
+        if (config.useTactics && typeof AITactics !== 'undefined' && AITactics.getTacticalWeights) {
+            const tactics = AITactics.getTacticalWeights(board, aiPiece, size);
+            updateTacticalWeights(tactics);
+        }
+
+        // 根据算法类型获取最佳移动
+        const move = getBestMoveByAlgorithm(board, config, size);
+
+        // 模式识别共识（仅对 Minimax 算法）
+        if (currentAlgorithm === ALGORITHM.MINIMAX) {
+            if (config.usePattern && typeof AIPattern !== 'undefined' && AIPattern.getSuggestion) {
+                const patternSuggestion = AIPattern.getSuggestion(board, aiPiece);
+                if (patternSuggestion) {
+                    const consensus = AIPattern.consensus ? AIPattern.consensus(move, patternSuggestion, board, aiPiece) : null;
+                    if (consensus) move = consensus;
+                }
+            }
+
+            // 策略共识
+            if (config.useStrategy && typeof AIStrategy !== 'undefined' && AIStrategy.getStrategicMove) {
+                const strategic = AIStrategy.getStrategicMove(board, aiPiece, size, tacticalWeights);
+                if (strategic && strategic.confidence > 55) {
+                    const stratMove = { row: strategic.row, col: strategic.col };
+                    if (typeof AIPattern !== 'undefined' && AIPattern.consensus) {
+                        const consensus = AIPattern.consensus(move, stratMove, board, aiPiece);
+                        if (consensus) move = consensus;
+                    }
                 }
             }
         }
 
         lastThinkTime = performance.now() - startTime;
-        console.log(`[AI] Think time: ${lastThinkTime.toFixed(2)}ms, nodes: ${nodeCount}`);
+        console.log(`[AI] Algorithm: ${currentAlgorithm}, Think time: ${lastThinkTime.toFixed(2)}ms, nodes: ${nodeCount}`);
 
-        return bestMove;
+        return move;
     }
 
     // 威胁计数
