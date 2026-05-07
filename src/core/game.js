@@ -1087,7 +1087,7 @@
                 // 极限模式增强
                 if (typeof AIExtreme !== 'undefined' && AIExtreme.isEnabled && AIExtreme.isEnabled()) {
                     try {
-                        const extremeMove = AIExtreme.getBestMove(board, aiPiece, size);
+                        const extremeMove = AIExtreme.getBestMove(board, aiPiece, boardSize);
                         if (extremeMove) move = extremeMove;
                     } catch (e) {
                         console.warn('[Game] AIExtreme error, fallback to standard AI:', e);
