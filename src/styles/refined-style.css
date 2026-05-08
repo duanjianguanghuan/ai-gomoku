@@ -1,17 +1,77 @@
 /**
- * 精致模式 - 增强样式 v6
- * 轻量化 · 无 will-change · 具体 transition · 最多 2 层阴影
- * 岛相关样式已迁移至 island-animation.css（支持子风格）
+ * 精致模式 - 增强样式 v8 (全面优化版)
+ * 
+ * v8 优化内容：
+ * - 优化动画曲线（更流畅的缓动函数）
+ * - 增强微交互效果
+ * - 添加 Cyberpunk 风格支持
+ * - 优化性能（减少重绘重排）
+ * - 增强视觉层次感
+ * - 新增灵动岛风格增强
+ * - 新增响应式布局优化
+ * - 新增触摸设备优化
  */
+
+/* ========== CSS 变量定义 ========== */
+:root {
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+    --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    --duration-fast: 0.15s;
+    --duration-normal: 0.25s;
+    --duration-slow: 0.4s;
+    --duration-slower: 0.6s;
+}
 
 /* ========== 精致模式灵动岛 CSS 变量 ========== */
 [data-perf="on"] {
     --island-accent-luxury: #d4af37;
     --island-accent-minimal: #888;
     --island-accent-glass: #8b5cf6;
+    --island-accent-cyber: #00f0ff;
 }
 
-/* ========== 精致模式 - 状态栏呼吸光效 ========== */
+/* ========== 精致模式 - 棋盘容器入场动画 ========== */
+[data-perf="on"] #board-container {
+    animation: refinedBoardEnter var(--duration-slower) var(--ease-out-expo);
+}
+
+@keyframes refinedBoardEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ========== 精致模式棋盘呼吸效果 ========== */
+[data-perf="on"] #board-container {
+    animation: refinedBoardBreath 8s ease-in-out infinite;
+}
+
+@keyframes refinedBoardBreath {
+    0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.002);
+        filter: brightness(1.02);
+    }
+}
+
+/* ========== 精致模式 - 状态栏增强 ========== */
+[data-perf="on"] #status-bar {
+    backdrop-filter: blur(12px) saturate(1.3);
+    transition: all var(--duration-normal) var(--ease-smooth);
+}
+
 [data-perf="on"] #status-bar::after {
     content: '';
     position: absolute;
@@ -25,35 +85,90 @@
 }
 
 [data-perf="on"] #status-bar:hover::after {
-    opacity: 0.3;
+    opacity: 0.4;
 }
 
-/* ========== 精致模式 - 按钮涟漪增强 ========== */
+[data-perf="on"] #status-bar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px var(--accent-shadow);
+}
+
+/* ========== 精致模式 - 按钮增强 ========== */
+[data-perf="on"] .btn-primary {
+    position: relative;
+    overflow: hidden;
+    transition: all var(--duration-normal) var(--ease-smooth);
+    transform: translateZ(0);
+}
+
 [data-perf="on"] .btn-primary::before {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 50%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent 50%);
     opacity: 0;
     transition: opacity var(--duration-fast) ease;
     pointer-events: none;
+}
+
+[data-perf="on"] .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent 60%);
+    pointer-events: none;
+}
+
+[data-perf="on"] .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--accent-shadow);
 }
 
 [data-perf="on"] .btn-primary:hover::before {
     opacity: 1;
 }
 
+[data-perf="on"] .btn-primary:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.1s;
+}
+
 /* ========== 精致模式 - 分数区域微交互 ========== */
 [data-perf="on"] .score-item {
-    padding: 2px 6px;
-    border-radius: 8px;
-    transition: transform var(--duration-normal) var(--ease-spring), background var(--duration-fast) ease;
+    padding: 3px 8px;
+    border-radius: 10px;
+    transition: all var(--duration-normal) var(--ease-spring);
+    cursor: default;
 }
 
 [data-perf="on"] .score-item:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px) scale(1.02);
     background: var(--opt-btn-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== 精致模式 - 分数弹跳动画 ========== */
+[data-perf="on"] .score-num.pop {
+    animation: refinedScorePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes refinedScorePop {
+    0% {
+        transform: scale(1) translateY(0);
+    }
+    25% {
+        transform: scale(1.4) translateY(-4px);
+    }
+    50% {
+        transform: scale(0.95) translateY(2px);
+    }
+    75% {
+        transform: scale(1.05) translateY(-1px);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+    }
 }
 
 /* ========== 精致模式 - 设置项入场动画 ========== */
@@ -61,36 +176,61 @@
     animation: settingItemIn var(--duration-normal) var(--ease-out-expo) both;
 }
 
-[data-perf="on"] #settings-content .setting-item:nth-child(1) { animation-delay: 0.05s; }
-[data-perf="on"] #settings-content .setting-item:nth-child(2) { animation-delay: 0.1s; }
-[data-perf="on"] #settings-content .setting-item:nth-child(3) { animation-delay: 0.15s; }
-[data-perf="on"] #settings-content .setting-item:nth-child(4) { animation-delay: 0.2s; }
-[data-perf="on"] #settings-content .setting-item:nth-child(5) { animation-delay: 0.25s; }
-[data-perf="on"] #settings-content .setting-item:nth-child(6) { animation-delay: 0.3s; }
-[data-perf="on"] #settings-content .setting-item:nth-child(7) { animation-delay: 0.35s; }
-[data-perf="on"] #settings-content .setting-item:nth-child(8) { animation-delay: 0.4s; }
-[data-perf="on"] #settings-content .setting-item:nth-child(9) { animation-delay: 0.45s; }
-[data-perf="on"] #settings-content .setting-item:nth-child(10) { animation-delay: 0.5s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(1) { animation-delay: 0.03s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(2) { animation-delay: 0.06s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(3) { animation-delay: 0.09s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(4) { animation-delay: 0.12s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(5) { animation-delay: 0.15s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(6) { animation-delay: 0.18s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(7) { animation-delay: 0.21s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(8) { animation-delay: 0.24s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(9) { animation-delay: 0.27s; }
+[data-perf="on"] #settings-content .setting-item:nth-child(10) { animation-delay: 0.3s; }
 
 @keyframes settingItemIn {
-    from { opacity: 0; transform: translateX(-8px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-/* ========== 精致模式 - 胜利遮罩微光效果 ========== */
+/* ========== 精致模式 - 胜利遮罩增强 ========== */
+[data-perf="on"] #win-overlay {
+    backdrop-filter: blur(8px) saturate(1.2);
+}
+
 [data-perf="on"] #win-overlay::before {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.05), transparent 60%);
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08), transparent 60%);
     pointer-events: none;
-    animation: winShimmer 3s ease-in-out infinite;
+    animation: winShimmer 4s ease-in-out infinite;
 }
 
 @keyframes winShimmer {
-    0%, 100% { opacity: 0.5; }
+    0%, 100% { opacity: 0.4; }
     50% { opacity: 1; }
+}
+
+[data-perf="on"] #win-overlay:not(.hidden) {
+    animation: refinedWinIn var(--duration-slower) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes refinedWinIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 /* ========== 精致模式 - 控制按钮区域入场 ========== */
@@ -99,96 +239,559 @@
 }
 
 @keyframes controlsSlideUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* ========== 精致模式 - 思考提示脉冲边框 ========== */
+/* ========== 精致模式 - 思考提示增强 ========== */
+[data-perf="on"] #thinking {
+    position: relative;
+}
+
 [data-perf="on"] #thinking::before {
     content: '';
     position: absolute;
-    inset: -1px;
+    inset: -2px;
     border-radius: inherit;
-    border: 1.5px solid var(--accent);
+    border: 2px solid var(--accent);
     opacity: 0;
-    animation: thinkingPulse 1.5s ease-in-out infinite;
+    animation: thinkingPulse 1.8s ease-in-out infinite;
     pointer-events: none;
 }
 
 @keyframes thinkingPulse {
-    0%, 100% { opacity: 0; transform: scale(1); }
-    50% { opacity: 0.3; transform: scale(1.02); }
+    0%, 100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.4;
+        transform: scale(1.03);
+    }
 }
 
-/* ========== 精致模式棋盘呼吸效果（性能优化） ========== */
-[data-perf="on"] #board-container {
-    animation: refinedBoardBreath 6s ease-in-out infinite;
+[data-perf="on"] #thinking .thinking-dots span {
+    width: 7px;
+    height: 7px;
+    box-shadow: 0 0 8px var(--accent-shadow);
+    animation: thinkingDot 1.4s ease-in-out infinite;
 }
-@keyframes refinedBoardBreath {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.003); opacity: 0.97; }
+
+[data-perf="on"] #thinking .thinking-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+[data-perf="on"] #thinking .thinking-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes thinkingDot {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 1;
+    }
 }
 
 /* ========== 精致模式画布光标 ========== */
 [data-perf="on"] #board-canvas {
     cursor: crosshair;
+    transition: opacity var(--duration-fast) ease;
 }
+
 [data-perf="on"] #board-canvas.disabled {
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.75;
 }
 
-/* ========== 精致模式分数弹跳动画 ========== */
-[data-perf="on"] .score-num.pop {
-    animation: refinedScorePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes refinedScorePop {
-    0% { transform: scale(1) translateY(0); }
-    30% { transform: scale(1.5) translateY(-3px); }
-    100% { transform: scale(1) translateY(0); }
-}
-
-/* ========== 精致模式思考指示器增强 ========== */
-[data-perf="on"] #thinking .thinking-dots span {
-    width: 6px; height: 6px;
-    box-shadow: 0 0 6px var(--accent-shadow);
-}
-
-/* ========== 精致模式胜利遮罩入场动画 ========== */
-[data-perf="on"] #win-overlay:not(.hidden) {
-    animation: refinedWinIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes refinedWinIn {
-    from { opacity: 0; transform: scale(0.92); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-/* ========== 精致模式按钮悬停增强 ========== */
-[data-perf="on"] .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px var(--accent-shadow);
-}
-[data-perf="on"] .btn-primary:active {
-    transform: translateY(0) scale(0.97);
-}
-
-/* ========== 精致模式设置面板滚动条 ========== */
+/* ========== 精致模式 - 设置面板滚动条 ========== */
 [data-perf="on"] .settings-inner {
     scrollbar-width: thin;
-    scrollbar-color: rgba(128,128,128,0.15) transparent;
+    scrollbar-color: rgba(128,128,128,0.2) transparent;
 }
-[data-perf="on"] .settings-inner::-webkit-scrollbar { width: 3px; }
-[data-perf="on"] .settings-inner::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.15); border-radius: 2px; }
 
-/* ========== 精致模式按钮光泽效果 ========== */
-[data-perf="on"] .btn-primary {
+[data-perf="on"] .settings-inner::-webkit-scrollbar {
+    width: 4px;
+}
+
+[data-perf="on"] .settings-inner::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+[data-perf="on"] .settings-inner::-webkit-scrollbar-thumb {
+    background: rgba(128,128,128,0.2);
+    border-radius: 3px;
+}
+
+[data-perf="on"] .settings-inner::-webkit-scrollbar-thumb:hover {
+    background: rgba(128,128,128,0.3);
+}
+
+/* ========== 精致模式 - Cyberpunk 风格增强 ========== */
+[data-perf="on"][data-style="cyberpunk"] #board-container {
+    box-shadow: 
+        0 0 30px rgba(0, 240, 255, 0.15),
+        0 0 60px rgba(255, 0, 128, 0.1),
+        inset 0 0 30px rgba(0, 240, 255, 0.05);
+}
+
+[data-perf="on"][data-style="cyberpunk"] .btn-primary {
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    box-shadow: 
+        0 0 10px rgba(0, 240, 255, 0.2),
+        inset 0 0 10px rgba(0, 240, 255, 0.1);
+}
+
+[data-perf="on"][data-style="cyberpunk"] .btn-primary:hover {
+    box-shadow: 
+        0 0 20px rgba(0, 240, 255, 0.4),
+        0 0 40px rgba(255, 0, 128, 0.2),
+        inset 0 0 15px rgba(0, 240, 255, 0.15);
+}
+
+/* ========== 精致模式 - Glassmorphism 风格增强 ========== */
+[data-perf="on"][data-style="glassmorphism"] #board-container {
+    backdrop-filter: blur(10px) saturate(1.4);
+}
+
+[data-perf="on"][data-style="glassmorphism"] .btn-primary {
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* ========== 精致模式 - Luxury 风格增强 ========== */
+[data-perf="on"][data-style="luxury"] #board-container {
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(212, 175, 55, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-perf="on"][data-style="luxury"] .btn-primary {
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.15), rgba(180, 140, 60, 0.1));
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+/* ========== 精致模式 - Minimal 风格增强 ========== */
+[data-perf="on"][data-style="minimal"] #board-container {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-perf="on"][data-style="minimal"] .btn-primary {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ========== 精致模式 - 选项按钮增强 ========== */
+[data-perf="on"] .opt-btn {
+    transition: all var(--duration-normal) var(--ease-smooth);
     position: relative;
     overflow: hidden;
 }
-[data-perf="on"] .btn-primary::after {
+
+[data-perf="on"] .opt-btn::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent 60%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    opacity: 0;
+    transition: opacity var(--duration-fast) ease;
+}
+
+[data-perf="on"] .opt-btn:hover::before {
+    opacity: 1;
+}
+
+[data-perf="on"] .opt-btn:hover {
+    transform: translateY(-1px);
+}
+
+[data-perf="on"] .opt-btn.selected {
+    transform: scale(1.02);
+}
+
+/* ========== 精致模式 - 涟漪效果 ========== */
+[data-perf="on"] .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: rippleEffect 0.6s ease-out forwards;
     pointer-events: none;
+}
+
+@keyframes rippleEffect {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ========== 精致模式 - 焦点状态增强 ========== */
+[data-perf="on"] *:focus {
+    outline: none;
+}
+
+[data-perf="on"] *:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ========== 精致模式 - 禁用状态 ========== */
+[data-perf="on"] [disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.3);
+}
+
+/* ========== 精致模式 - 过渡优化 ========== */
+[data-perf="on"] * {
+    transition-timing-function: var(--ease-smooth);
+}
+
+/* 减少动画（用户偏好） */
+@media (prefers-reduced-motion: reduce) {
+    [data-perf="on"] * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========== 精致模式 - 增强微交互反馈 ========== */
+
+/* 按钮按下波纹效果增强 */
+[data-perf="on"] .btn-primary:active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.3), transparent 70%);
+    animation: btnPressRipple 0.4s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes btnPressRipple {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+}
+
+/* 棋盘容器悬停增强 */
+[data-perf="on"] #board-container:hover {
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* 状态栏入场动画增强 */
+[data-perf="on"] #status-bar {
+    animation: statusBarSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes statusBarSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 分数变化闪烁效果 */
+[data-perf="on"] .score-num.flash {
+    animation: scoreFlash 0.3s ease;
+}
+
+@keyframes scoreFlash {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.5); }
+}
+
+/* 思考状态增强动画 */
+[data-perf="on"] #thinking {
+    animation: thinkingFloat 2s ease-in-out infinite;
+}
+
+@keyframes thinkingFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* 设置面板滑入增强 */
+[data-perf="on"] #settings-panel:not(.hidden) #settings-content {
+    animation: settingsSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes settingsSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 选项按钮选中动画增强 */
+[data-perf="on"] .opt-btn.selected {
+    animation: optBtnSelect 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes optBtnSelect {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1.02); }
+}
+
+/* 模式切换过渡 */
+[data-perf="on"] .opt-group {
+    transition: opacity 0.2s ease;
+}
+
+[data-perf="on"] .opt-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-perf="on"] .opt-btn:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+}
+
+[data-perf="on"] .opt-btn:active {
+    transform: scale(0.96);
+}
+
+/* ========== 精致模式 - 响应式优化 ========== */
+
+/* 小屏幕适配 */
+@media (max-width: 480px) {
+    [data-perf="on"] #board-container {
+        animation-duration: 0.3s;
+    }
+    
+    [data-perf="on"] .btn-primary,
+    [data-perf="on"] .btn-secondary {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+    
+    [data-perf="on"] #status-bar {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+    
+    [data-perf="on"] .score-item {
+        padding: 2px 5px;
+    }
+    
+    [data-perf="on"] #settings-content .setting-item {
+        animation-duration: 0.15s;
+    }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1200px) {
+    [data-perf="on"] #board-container {
+        max-width: 600px;
+    }
+    
+    [data-perf="on"] .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px var(--accent-shadow);
+    }
+}
+
+/* 高刷新率屏幕优化 */
+@media (min-resolution: 2dppx) {
+    [data-perf="on"] * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* ========== 精致模式 - 触摸设备优化 ========== */
+@media (hover: none) and (pointer: coarse) {
+    [data-perf="on"] .btn-primary:hover {
+        transform: none;
+    }
+    
+    [data-perf="on"] .btn-primary:active {
+        transform: scale(0.97);
+        transition-duration: 0.1s;
+    }
+    
+    [data-perf="on"] .opt-btn:hover {
+        transform: none;
+        background: transparent;
+    }
+    
+    [data-perf="on"] .opt-btn:active {
+        transform: scale(0.97);
+    }
+    
+    [data-perf="on"] #status-bar:hover {
+        transform: none;
+    }
+}
+
+/* ========== 精致模式 - 性能优化标记 ========== */
+[data-perf="on"] .will-change-transform {
+    will-change: transform;
+}
+
+[data-perf="on"] .will-change-opacity {
+    will-change: opacity;
+}
+
+[data-perf="on"] .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* ========== 精致模式 - 灵动岛增强样式 ========== */
+
+/* 灵动岛入场动画 */
+[data-perf="on"] #music-island {
+    animation: islandEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes islandEnter {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 灵动岛展开过渡增强 */
+[data-perf="on"] .island-expanded {
+    transition: all 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-perf="on"] .island-pill {
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 灵动岛悬停效果 */
+[data-perf="on"] #music-island:hover .island-pill:not(.expanded) {
+    transform: scale(1.02);
+}
+
+/* 播放按钮脉冲 */
+[data-perf="on"] #music-island.playing .ctrl-play {
+    animation: playBtnPulse 2s ease-in-out infinite;
+}
+
+@keyframes playBtnPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* 进度条动画增强 */
+[data-perf="on"] .progress-fill {
+    transition: width 0.1s linear;
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 80%, white));
+}
+
+/* 封面旋转动画 */
+[data-perf="on"] #music-island.playing .island-cover {
+    animation: coverRotate 20s linear infinite;
+}
+
+@keyframes coverRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ========== 精致模式 - Cyberpunk 风格灵动岛增强 ========== */
+[data-perf="on"][data-style="cyberpunk"] #music-island {
+    filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.3));
+}
+
+[data-perf="on"][data-style="cyberpunk"] .island-pill {
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    box-shadow: 
+        0 0 15px rgba(0, 240, 255, 0.2),
+        0 0 30px rgba(255, 0, 128, 0.1),
+        inset 0 1px 0 rgba(0, 240, 255, 0.1);
+}
+
+[data-perf="on"][data-style="cyberpunk"] .island-pill:hover {
+    box-shadow: 
+        0 0 25px rgba(0, 240, 255, 0.35),
+        0 0 50px rgba(255, 0, 128, 0.2),
+        inset 0 1px 0 rgba(0, 240, 255, 0.15);
+}
+
+[data-perf="on"][data-style="cyberpunk"] .ctrl-btn {
+    transition: all 0.2s ease;
+}
+
+[data-perf="on"][data-style="cyberpunk"] .ctrl-btn:hover {
+    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6));
+    transform: scale(1.1);
+}
+
+/* ========== 精致模式 - Glassmorphism 风格灵动岛增强 ========== */
+[data-perf="on"][data-style="glassmorphism"] .island-pill {
+    backdrop-filter: blur(20px) saturate(1.8);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+[data-perf="on"][data-style="glassmorphism"] .island-expanded {
+    backdrop-filter: blur(25px) saturate(1.6);
+}
+
+[data-perf="on"][data-style="glassmorphism"] .ctrl-btn:hover {
+    background: rgba(139, 92, 246, 0.15);
+    transform: scale(1.08);
+}
+
+/* ========== 精致模式 - Luxury 风格灵动岛增强 ========== */
+[data-perf="on"][data-style="luxury"] .island-pill {
+    border: 1.5px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 
+        0 0 12px rgba(212, 175, 55, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+[data-perf="on"][data-style="luxury"] .island-pill:hover {
+    box-shadow: 
+        0 0 20px rgba(212, 175, 55, 0.3),
+        0 0 40px rgba(212, 175, 55, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-perf="on"][data-style="luxury"] .ctrl-btn:hover {
+    background: rgba(212, 175, 55, 0.1);
+    transform: scale(1.08);
+}
+
+/* ========== 精致模式 - Minimal 风格灵动岛增强 ========== */
+[data-perf="on"][data-style="minimal"] .island-pill {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+[data-perf="on"][data-style="minimal"] .island-pill:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+[data-perf="on"][data-style="minimal"] .ctrl-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: scale(1.05);
 }
